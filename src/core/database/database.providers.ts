@@ -20,6 +20,7 @@ export const databaseProviders = [{
            config = databaseConfig.development;
         }
         const sequelize = new Sequelize(config);
+        //TODO:Add models here
         sequelize.addModels(['models goes here']);
         await sequelize.sync();
         return sequelize;

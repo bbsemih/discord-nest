@@ -9,16 +9,7 @@ export interface IDatabaseConfigAttributes {
 }
 
 export interface IDatabaseConfig {
-  development: {
-    default: IDatabaseConfigAttributes;
-    transaction: IDatabaseConfigAttributes;
-  };
-  test: {
-    default: IDatabaseConfigAttributes;
-    transaction: IDatabaseConfigAttributes;
-  };
-  production: {
-    default: IDatabaseConfigAttributes;
-    transaction: IDatabaseConfigAttributes;
-  };
+  development: IDatabaseConfigAttributes;
+  test: IDatabaseConfigAttributes;
+  production: IDatabaseConfigAttributes;
 }
