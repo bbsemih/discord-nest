@@ -2,14 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-//TODO: logger
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('v1/api');
 
   const config = new DocumentBuilder()
     .setTitle('sequelize-chat')
-    .setDescription("The API documentation for 'sequelize-chat'")
+    .setDescription("The API documentation for 'discord-nest'")
     .setVersion('1.0.0')
     .addTag('api', 'swagger')
     .build();
