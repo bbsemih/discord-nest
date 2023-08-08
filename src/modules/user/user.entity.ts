@@ -18,6 +18,18 @@ export class User extends Model<User> {
 
   @Column({
     type: DataType.STRING,
+    allowNull: false,
+  })
+  displayName: string;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  dateOfBirth: Date;
+
+  @Column({
+    type: DataType.STRING,
     unique: true,
     allowNull: false,
   })
@@ -30,15 +42,20 @@ export class User extends Model<User> {
   password: string;
 
   @Column({
-    type: DataType.ENUM,
-    values: ['male', 'female'],
+    type: DataType.STRING,
     allowNull: false,
   })
-  gender: string;
+  role: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  status: string;
 
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
   })
-  admin: boolean;
+  isBot: boolean;
 }

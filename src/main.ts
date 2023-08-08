@@ -1,10 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { VersioningType } from '@nestjs/common';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix('api');
+
+  //test if we can see the v1 in the url
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: ['1', ''],
+  });
+  app.use(helmet());
 
   const config = new DocumentBuilder()
     .setTitle('sequelize-chat')

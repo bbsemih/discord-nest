@@ -18,7 +18,6 @@ export class Message extends Model<Message> {
   })
   userId: number;
 
-  // one-to-one
   @BelongsTo(() => User)
   user: User;
 
@@ -45,10 +44,4 @@ export class Message extends Model<Message> {
     allowNull: false,
   })
   guildID: string;
-
-  @Column({
-    type: DataType.BOOLEAN,
-    allowNull: false,
-  })
-  isBot: false;
 }

@@ -1,34 +1,40 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/user/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './core/database/database.module';
-import { GuardModule } from './modules/guard/guard.module';
 import { MessageModule } from './modules/message/message.module';
-import { ServerModule } from './modules/server/server.module';
-import { UserService } from './modules/user/user.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { LoggerService } from './core/logger/logger.service';
+import { GuildModule } from './modules/guild/guild.module';
+import { APP_PIPE } from '@nestjs/core';
 
 // eslint-disable-next-line
 const cookieSession = require('cookie-session');
 
 @Module({
-  imports: [ConfigModule.forRoot({isGlobal:true}),UserModule, AuthModule, DatabaseModule, GuardModule, ServerModule, MessageModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), GuildModule, UserModule, AuthModule, DatabaseModule, MessageModule],
   controllers: [AppController],
-  providers: [AppService, UserService, LoggerService],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        whitelist: true,
+      }),
+    },
+  ],
 })
 export class AppModule {
   constructor(private configService: ConfigService) {}
 
   configure(consumer: MiddlewareConsumer) {
-     consumer
-       .apply(
+    consumer
+      .apply(
         cookieSession({
           keys: [this.configService.get('COOKIE_KEY')],
         }),
-       )
-       .forRoutes('*');
+      )
+      .forRoutes('*');
   }
-};
+}
