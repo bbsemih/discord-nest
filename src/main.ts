@@ -8,7 +8,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
 
-  //test if we can see the v1 in the url
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: ['1', ''],
@@ -16,14 +15,14 @@ async function bootstrap() {
   app.use(helmet());
 
   const config = new DocumentBuilder()
-    .setTitle('sequelize-chat')
+    .setTitle('discord-nest')
     .setDescription("The API documentation for 'discord-nest'")
     .setVersion('1.0.0')
     .addTag('api', 'swagger')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swaggger', app, document);
+  SwaggerModule.setup('swagger', app, document);
 
   if (process.env.CORS_ENABLE) {
     app.enableCors({
