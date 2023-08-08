@@ -1,7 +1,7 @@
 {
     "name": "discord-nest",
     "version": "1.0.0",
-    "description": "",
+    "description": "Discord backend clone in NestJS",
     "author": "Semih Berkay Ozturk",
     "private": true,
     "license": "UNLICENSED",
