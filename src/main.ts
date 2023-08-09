@@ -10,7 +10,7 @@ async function bootstrap() {
 
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: ['1', ''],
+    defaultVersion: '1',
   });
   app.use(helmet());
 
@@ -22,7 +22,12 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document);
+  SwaggerModule.setup('api/v1/swagger', app, document, {
+    swaggerOptions: {
+      filter: true,
+      showRequestDuration: true,
+    },
+  });
 
   if (process.env.CORS_ENABLE) {
     app.enableCors({
