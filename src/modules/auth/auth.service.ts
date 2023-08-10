@@ -1,3 +1,4 @@
+import { IsEmail } from 'class-validator';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
@@ -30,7 +31,7 @@ export class AuthService {
 
   public async create(user) {
     const pass = await this.hashPassword(user.password);
-    const newUser = await this.userService.create({ ...user, password: pass });
+    const newUser = await this.userService.create(user.email, pass);
     // tslint:disable-next-line: no-string-literal
     const { password, ...result } = newUser['dataValues'];
     const token = await this.generateToken(result);

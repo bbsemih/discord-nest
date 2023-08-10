@@ -3,8 +3,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { MESSAGE_REPOSITORY } from '../contants';
 import { Message } from './message.entity';
+import { Cache } from 'cache-manager';
 
-@Injectable()
+@Injectable()s
 export class MessageService {
   constructor(private readonly userService: UserService, 
     @Inject(MESSAGE_REPOSITORY) private readonly messageRepository: typeof Message,
