@@ -33,7 +33,6 @@ export class AuthService {
     const newUser = await this.userService.create({ ...user, password: pass });
     // tslint:disable-next-line: no-string-literal
     const { password, ...result } = newUser['dataValues'];
-
     const token = await this.generateToken(result);
 
     return { user: result, token };
