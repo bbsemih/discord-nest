@@ -10,18 +10,30 @@ import { LogLevelEnum, LogTypeEnum } from 'src/core/logger/logger.interface';
 export class UserService {
   constructor(
     @Inject(USER_REPOSITORY) private readonly repo: typeof User,
-    @Inject(CACHE_MANAGER) private cacheService: Cache,
+    //@Inject(CACHE_MANAGER) private cacheService: Cache,
     private readonly logger: LoggerService,
   ) {}
+
+  private logInfo(message: string, id?: number) {
+    this.logger.info(`${message} ${id}`, 'UsersService', LogLevelEnum.INFO, 'user.service.ts', LogTypeEnum.SERVICE);
+  }
+
+  private logWarn(message: string, id?: number) {
+    this.logger.warn(`${message} ${id}`, 'UsersService', LogLevelEnum.WARN, 'user.service.ts', LogTypeEnum.SERVICE);
+  }
+
+  private logError(message: string, error: any) {
+    this.logger.error(`${message} ${error.message}`, 'UsersService', LogLevelEnum.ERROR, 'user.service.ts', LogTypeEnum.SERVICE);
+  }
 
   async create(email: string, password: string) {
     const user = this.repo.create({ email, password });
     try {
       const newUser = await this.repo.create<User>(user);
-      this.logger.info(`new user created: ${newUser.email}`, 'UsersService', LogLevelEnum.INFO, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logInfo('User created:', newUser.id);
       return newUser;
     } catch (err) {
-      this.logger.error(`Error creating user: ${err.message}`, 'UsersService', LogLevelEnum.ERROR, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logError('Error creating user:', err.message);
       throw err;
     }
   }
@@ -29,10 +41,10 @@ export class UserService {
   async findAll(email: string) {
     try {
       const users = await this.repo.findAll<User>({ where: { email } });
-      this.logger.info(`Found ${users.length} user(s) with email: ${email}`, 'UsersService', LogLevelEnum.INFO, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logInfo(`Found ${users.length} user(s) with email: ${email}`);
       return users;
     } catch (err) {
-      this.logger.error(`Error finding user: ${err.message}`, 'UsersService', LogLevelEnum.ERROR, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logError(`Error finding users: ${err.message}`, err);
       throw err;
     }
   }
@@ -41,12 +53,12 @@ export class UserService {
     try {
       const user = await this.repo.findOne<User>({ where: { email } });
       if (!user) {
-        this.logger.warn(`user with email:${email} is not found!`, 'UsersService', LogLevelEnum.WARN, 'users.service.ts', LogTypeEnum.SERVICE);
+        this.logWarn(`user with email:${email} is not found!`);
         return null;
       }
       return user;
     } catch (err) {
-      this.logger.error(`Error finding user: ${err.message}`, 'UsersService', LogLevelEnum.ERROR, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logError(`Error finding user: ${err.message}`, err);
       throw err;
     }
   }
@@ -55,13 +67,13 @@ export class UserService {
     try {
       const user = await this.repo.findByPk<User>(id);
       if (user) {
-        this.logger.info(`user found: ${user.email}`, 'UsersService', LogLevelEnum.INFO, 'users.service.ts', LogTypeEnum.SERVICE);
+        this.logInfo(`user found: ${user.email}`, user.id);
       } else {
-        this.logger.warn(`user with id:${id} is not found!`, 'UsersService', LogLevelEnum.WARN, 'users.service.ts', LogTypeEnum.SERVICE);
+        this.logWarn(`user with id:${id} is not found!`);
       }
       return user;
     } catch (err) {
-      this.logger.error(`Error finding user: ${err.message}`, 'UsersService', LogLevelEnum.ERROR, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logError(`Error finding user: ${err.message}`, err);
       throw err;
     }
   }
@@ -69,16 +81,16 @@ export class UserService {
   async update(id: number, attrs: Partial<User>) {
     const user = await this.repo.findByPk<User>(id);
     if (!user) {
-      this.logger.warn(`user with id:${id} is not found!`, 'UsersService', LogLevelEnum.WARN, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logWarn(`user with id:${id} is not found!`);
       throw new NotFoundException('user not found');
     }
     Object.assign(user, attrs);
     try {
       const updatedUser = await user.save();
-      this.logger.info(`user updated: ${updatedUser.email}`, 'UsersService', LogLevelEnum.INFO, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logInfo(`user updated: ${updatedUser.email}`, updatedUser.id);
       return updatedUser;
     } catch (err) {
-      this.logger.error(`Error updating user: ${err.message}`, 'UsersService', LogLevelEnum.ERROR, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logError(`Error updating user: ${err.message}`, err);
       throw err;
     }
   }
@@ -86,15 +98,15 @@ export class UserService {
   async remove(id: number) {
     const user = await this.repo.findByPk<User>(id);
     if (!user) {
-      this.logger.warn(`user with id:${id} is not found!`, 'UsersService', LogLevelEnum.WARN, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logWarn(`user with id:${id} is not found!`);
       throw new NotFoundException('user not found');
     }
 
     try {
       await this.repo.destroy({ where: { id } });
-      this.logger.info(`User deleted: ${user.email}`, 'UsersService', LogLevelEnum.INFO, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logInfo(`user deleted: ${user.email}`, user.id);
     } catch (error) {
-      this.logger.error(`Error deleting user: ${error.message}`, 'UsersService', LogLevelEnum.ERROR, 'users.service.ts', LogTypeEnum.SERVICE);
+      this.logError(`Error deleting user: ${error.message}`, error);
       throw error;
     }
   }

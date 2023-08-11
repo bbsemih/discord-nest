@@ -1,6 +1,5 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { User } from '../user/user.entity';
-import { Col } from 'sequelize/types/utils';
 
 @Table
 export class Guild extends Model<Guild> {

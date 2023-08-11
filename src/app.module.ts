@@ -48,7 +48,7 @@ const cookieSession = require('cookie-session');
     AuthModule,
     DatabaseModule,
     MessageModule,
-    LoggerModule
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [

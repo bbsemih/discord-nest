@@ -19,8 +19,8 @@ export class UserController {
     return this.userService.findOneByEmail(email);
   }
 
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(30)
+  //@UseInterceptors(CacheInterceptor)
+  //@CacheTTL(30)
   @Get('/:id')
   async findUserById(@Param('id') id: string) {
     return this.userService.findOne(parseInt(id));

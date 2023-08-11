@@ -12,20 +12,20 @@ export class MessageService {
   constructor(
     private readonly userService: UserService,
     @Inject(MESSAGE_REPOSITORY) private readonly repo: typeof Message,
-    @Inject(CACHE_MANAGER) private cacheService: Cache,
+    //@Inject(CACHE_MANAGER) private cacheService: Cache,
     private readonly logger: LoggerService,
   ) {}
 
   private logInfo(message: string, id: number) {
     this.logger.info(`${message} ${id}`, 'MessageService', LogLevelEnum.INFO, 'message.service.ts', LogTypeEnum.SERVICE);
   }
-  
+
   private logWarn(message: string, id: number) {
     this.logger.warn(`${message} ${id}`, 'MessageService', LogLevelEnum.WARN, 'message.service.ts', LogTypeEnum.SERVICE);
   }
 
   private logError(message: string, error: any) {
-    this.logger.error(`${message} ${error.message}`, 'MessageService', LogLevelEnum.ERROR,'message.service.ts', LogTypeEnum.SERVICE);
+    this.logger.error(`${message} ${error.message}`, 'MessageService', LogLevelEnum.ERROR, 'message.service.ts', LogTypeEnum.SERVICE);
   }
 
   async create(userId: number, content: string, guildID: string): Promise<Message> {
@@ -44,7 +44,7 @@ export class MessageService {
       this.logInfo('Message created by user:', user.id);
       return message;
     } catch (error) {
-      this.logError('Error creating message:', error.message);//or only error???
+      this.logError('Error creating message:', error.message); //or only error???
       throw error;
     }
   }
