@@ -9,7 +9,7 @@ RUN npm ci
 
 COPY --chown=node:node . .
 
-# Use the node user from the image (instead of the root user)
+# Use the node user from the image (instead of the root user because it's more secure)
 USER node
 
 #---Build stage---
@@ -19,9 +19,7 @@ WORKDIR /usr/src/app
 
 COPY --chown=node:node package*.json ./
 
-# In order to run `npm run build` we need access to the Nest CLI which is a dev dependency. 
-#In the previous development stage we ran `npm ci` which installed all dependencies, 
-#so we can copy over the node_modules directory from the development image
+#copying node_modules from development stage to avoid installing all dependencies again
 COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
 
 COPY --chown=node:node . .
@@ -30,6 +28,7 @@ RUN npm run build
 
 ENV NODE_ENV=production
 
+#installing only production dependencies and cleaning the cache to reduce image size
 RUN npm ci --only=production && npm cache clean --force
 
 USER node

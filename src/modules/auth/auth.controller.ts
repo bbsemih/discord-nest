@@ -2,8 +2,10 @@ import { Controller, UseGuards, Post, Request, Body, HttpCode, Session } from '@
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UserDto } from '../user/dto/user.dto';
+import { ApiTags } from '@nestjs/swagger';
 
-//session here
+//session here???
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -24,6 +26,6 @@ export class AuthController {
 
   @Post('signup')
   async signUp(@Body() user: UserDto) {
-    return await this.authService.create(user);
+    return await this.authService.signup(user);
   }
 }

@@ -28,7 +28,7 @@ export class MessageService {
     this.logger.error(`${message} ${error.message}`, 'MessageService', LogLevelEnum.ERROR, 'message.service.ts', LogTypeEnum.SERVICE);
   }
 
-  async create(userId: number, content: string, guildID: string): Promise<Message> {
+  async create(content: string, userId?: number,guildID?: string): Promise<Message> {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
@@ -49,7 +49,7 @@ export class MessageService {
     }
   }
 
-  async findOne(id: number, guildId: string) {
+  async findOne(id: number, guildId?: string) {
     const message = await this.repo.findOne<Message>({
       where: { id, guildID: guildId },
     });

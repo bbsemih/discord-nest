@@ -4,7 +4,9 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

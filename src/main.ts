@@ -18,7 +18,6 @@ async function bootstrap() {
     .setTitle('discord-nest')
     .setDescription("The API documentation for 'discord-nest'")
     .setVersion('1.0.0')
-    .addTag('api', 'swagger')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

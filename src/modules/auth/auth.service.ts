@@ -1,8 +1,9 @@
-import { IsEmail } from 'class-validator';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { signupUserDTO } from './dto/signup-user.dto';
+import { loginUserDTO } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -24,12 +25,12 @@ export class AuthService {
     return result;
   }
 
-  public async login(user) {
+  public async login(user: loginUserDTO) {
     const token = await this.generateToken(user);
     return { user, token };
   }
 
-  public async create(user) {
+  public async signup(user: signupUserDTO) {
     const pass = await this.hashPassword(user.password);
     const newUser = await this.userService.create(user.email, pass);
     // tslint:disable-next-line: no-string-literal
