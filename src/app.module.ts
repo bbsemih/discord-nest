@@ -10,6 +10,9 @@ import { GuildModule } from './modules/guild/guild.module';
 import { APP_PIPE } from '@nestjs/core';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
+import { LoggerModule } from './core/logger/logger.module';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 
 // eslint-disable-next-line
 const cookieSession = require('cookie-session');
@@ -18,6 +21,20 @@ const cookieSession = require('cookie-session');
   imports: [
     CacheModule.register({ isGlobal: true }),
     ConfigModule.forRoot({ isGlobal: true }),
+    WinstonModule.forRoot({
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.colorize(),
+            winston.format.simple(),
+            winston.format.printf(msg => {
+              return `[${msg.level}] ${msg.timestamp} | ${msg.message} | class: ${msg.context.class} | filename: ${msg.context.filename} | type: ${msg.context.type}`;
+            }),
+          ),
+        }),
+      ],
+    }),
     CacheModule.register({
       isGlobal: true,
       store: typeof redisStore,
@@ -31,6 +48,7 @@ const cookieSession = require('cookie-session');
     AuthModule,
     DatabaseModule,
     MessageModule,
+    LoggerModule
   ],
   controllers: [AppController],
   providers: [

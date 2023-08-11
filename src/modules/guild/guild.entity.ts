@@ -56,7 +56,7 @@ export class Guild extends Model<Guild> {
   roles: string[];
 
   @Column({
-    type:DataType.STRING,
+    type: DataType.STRING,
     allowNull: false,
   })
   region: string;

@@ -1,6 +1,7 @@
-import { Controller, Get, Post, UseInterceptors, Param, Query, Delete, Inject } from '@nestjs/common';
+import { Controller, Get, Post, UseInterceptors, Param, Query, Delete, Inject, Patch, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CurrentUser } from './decorators/current-user.decorator';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
@@ -14,7 +15,9 @@ export class UserController {
   }
 
   @Get()
-  async findAllUsers() {}
+  async findAllUsers(@Query('email') email: string) {
+    return this.userService.findOneByEmail(email);
+  }
 
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
@@ -26,5 +29,10 @@ export class UserController {
   @Delete('/:id')
   removeUser(@Param('id') id: string) {
     return this.userService.remove(parseInt(id));
+  }
+
+  @Patch('/:id')
+  updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
+    return this.userService.update(parseInt(id), body);
   }
 }

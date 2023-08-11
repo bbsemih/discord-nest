@@ -3,5 +3,5 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GuildService {
-    constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {}
 }
