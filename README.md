@@ -1,3 +1,14 @@
+# discord-nest
+
+### [OpenAPI specification⤴️](https://app.swaggerhub.com/apis-docs/SEMIHOZTURK/discord-nest/1.0.0)
+
+## Technologies
+
+> * NestJS - Sequelize ORM
+> * TypeScript
+> * Docker
+> * Redis
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
