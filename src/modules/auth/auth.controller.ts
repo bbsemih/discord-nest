@@ -1,11 +1,20 @@
-import { Controller, UseGuards, Post, Request, Body } from '@nestjs/common';
+import { Controller, UseGuards, Post, Request, Body, HttpCode, Session } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UserDto } from '../user/dto/user.dto';
 
+//session here
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @Post('signout')
+  @HttpCode(200)
+  async signout(@Session() session: {userId:number; admin:boolean; userEmail:string}) {
+    session.userId = null;
+    session.admin = null;
+    session.userEmail = null;
+  }
 
   @UseGuards(AuthGuard('local'))
   @Post('login')

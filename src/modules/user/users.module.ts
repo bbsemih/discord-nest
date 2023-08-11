@@ -3,7 +3,6 @@ import { UserService } from './user.service';
 import { usersProviders } from './users.providers';
 import { LoggerModule } from 'src/core/logger/logger.module';
 import { UserController } from './user.controller';
-import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [LoggerModule ],
