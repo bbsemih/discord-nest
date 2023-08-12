@@ -12,4 +12,5 @@ export interface IDatabaseConfig {
   development: IDatabaseConfigAttributes;
   test: IDatabaseConfigAttributes;
   production: IDatabaseConfigAttributes;
+  aws: IDatabaseConfigAttributes;
 }

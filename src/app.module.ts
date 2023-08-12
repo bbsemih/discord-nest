@@ -13,12 +13,18 @@ import * as redisStore from 'cache-manager-redis-store';
 import { LoggerModule } from './core/logger/logger.module';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
+import { JwtModule } from '@nestjs/jwt';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 // eslint-disable-next-line
 const cookieSession = require('cookie-session');
 
 @Module({
   imports: [
+    JwtModule.register({
+      secret: process.env.TOKEN_SECRET,
+    }),
     CacheModule.register({ isGlobal: true }),
     ConfigModule.forRoot({ isGlobal: true }),
     WinstonModule.forRoot({

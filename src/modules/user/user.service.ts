@@ -5,6 +5,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { LoggerService } from 'src/core/logger/logger.service';
 import { LogLevelEnum, LogTypeEnum } from 'src/core/logger/logger.interface';
+import { signupUserDTO } from '../auth/dto/signup-user.dto';
 
 @Injectable()
 export class UserService {
@@ -26,10 +27,9 @@ export class UserService {
     this.logger.error(`${message} ${error.message}`, 'UsersService', LogLevelEnum.ERROR, 'user.service.ts', LogTypeEnum.SERVICE);
   }
 
-  async create(email: string, password: string) {
-    const user = this.repo.create({ email, password });
+  async create(user: signupUserDTO): Promise<User> {
     try {
-      const newUser = await this.repo.create<User>(user);
+      const newUser = await this.repo.create(user);
       this.logInfo('User created:', newUser.id);
       return newUser;
     } catch (err) {

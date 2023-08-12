@@ -1,4 +1,5 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Guild } from '../guild/guild.entity';
 
 @Table
 export class User extends Model<User> {
@@ -10,6 +11,16 @@ export class User extends Model<User> {
   })
   id: number;
 
+  @ForeignKey(() => Guild)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  guildId: number;
+
+  @BelongsTo(() => Guild)
+  guild: Guild;
+
   @Column({
     type: DataType.STRING,
     allowNull: false,
@@ -20,7 +31,7 @@ export class User extends Model<User> {
     type: DataType.STRING,
     allowNull: false,
   })
-  displayName: string;
+  fullName: string;
 
   @Column({
     type: DataType.DATE,
@@ -44,18 +55,21 @@ export class User extends Model<User> {
   @Column({
     type: DataType.STRING,
     allowNull: false,
+    defaultValue: 'member',
   })
   role: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
+    defaultValue: 'joined',
   })
   status: string;
 
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
+    defaultValue: false,
   })
   isBot: boolean;
 }

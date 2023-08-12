@@ -25,6 +25,15 @@ export const databaseConfig: IDatabaseConfig = {
     password: process.env.DB_PASS,
     database: process.env.DB_NAME_PRODUCTION,
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
+  },
+  aws: {
+    username: process.env.AWS_DB_USER,
+    password: process.env.AWS_DB_PASS,
+    database: process.env.AWS_DB_NAME,
+    host: process.env.AWS_DB_HOST,
+    port: process.env.AWS_DB_PORT,
+    dialect: process.env.AWS_DB_DIALECT,
   },
 };

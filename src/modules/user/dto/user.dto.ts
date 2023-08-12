@@ -12,7 +12,7 @@ export class UserDto {
 
   @IsNotEmpty()
   @Expose()
-  readonly displayName: string;
+  readonly fullName: string;
 
   @IsNotEmpty()
   @IsEmail()
@@ -24,13 +24,13 @@ export class UserDto {
   @Expose()
   readonly password: string;
 
-  @IsString()
-  @Expose()
-  readonly role: string;
-
   @IsDate()
   @Expose()
   readonly dateOfBirth: Date;
+
+  @IsString()
+  @Expose()
+  readonly role: string;
 
   @IsNotEmpty()
   @Expose()

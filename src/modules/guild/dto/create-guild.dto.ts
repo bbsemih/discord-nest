@@ -11,7 +11,7 @@ export class CreateGuildDTO {
 
   @IsNotEmpty()
   @IsString()
-  readonly ownerId: string;
+  readonly ownerId: number;
 
   @IsNotEmpty()
   @IsString()

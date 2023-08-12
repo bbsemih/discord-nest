@@ -3,6 +3,9 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { VersioningType } from '@nestjs/common';
 import helmet from 'helmet';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,11 +17,7 @@ async function bootstrap() {
   });
   app.use(helmet());
 
-  const config = new DocumentBuilder()
-    .setTitle('discord-nest')
-    .setDescription("The API documentation for 'discord-nest'")
-    .setVersion('1.0.0')
-    .build();
+  const config = new DocumentBuilder().setTitle('discord-nest').setDescription("The API documentation for 'discord-nest'").setVersion('1.0.0').build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/swagger', app, document, {

@@ -21,10 +21,7 @@ export class MessageController {
   }
 
   @Patch(':id')
-  async updateMessage(
-    @Param('id') id: number,
-    @Body() updateMessageDto: UpdateMessageDto,
-  ): Promise<Message> {
+  async updateMessage(@Param('id') id: number, @Body() updateMessageDto: UpdateMessageDto): Promise<Message> {
     return this.messageService.update(id, updateMessageDto);
   }
 

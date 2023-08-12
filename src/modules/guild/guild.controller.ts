@@ -5,9 +5,8 @@ import { Guild } from './guild.entity';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { ApiOperation, ApiTags, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-
 @Controller('guild')
-@ApiTags('guild') 
+@ApiTags('guild')
 export class GuildController {
   constructor(private readonly guildService: GuildService) {}
 
@@ -19,7 +18,7 @@ export class GuildController {
   })
   createGuild(@Body() createGuildDTO: CreateGuildDTO): Promise<Guild> {
     return this.guildService.create(createGuildDTO);
-  } 
+  }
 
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)

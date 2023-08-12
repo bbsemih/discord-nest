@@ -25,10 +25,10 @@ export class Guild extends Model<Guild> {
 
   @ForeignKey(() => User)
   @Column({
-    type: DataType.STRING,
+    type: DataType.INTEGER,
     allowNull: false,
   })
-  ownerId!: string;
+  ownerId!: number;
 
   @BelongsTo(() => User)
   owner: User;

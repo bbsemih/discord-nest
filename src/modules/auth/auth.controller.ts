@@ -1,8 +1,9 @@
 import { Controller, UseGuards, Post, Request, Body, HttpCode, Session } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { UserDto } from '../user/dto/user.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { signupUserDTO } from './dto/signup-user.dto';
+import { DoesUserExist } from 'src/core/guards/doesUserExist.guard';
 
 //session here???
 @ApiTags('auth')
@@ -12,7 +13,7 @@ export class AuthController {
 
   @Post('signout')
   @HttpCode(200)
-  async signout(@Session() session: {userId:number; admin:boolean; userEmail:string}) {
+  async signout(@Session() session: { userId: number; admin: boolean; userEmail: string }) {
     session.userId = null;
     session.admin = null;
     session.userEmail = null;
@@ -24,8 +25,9 @@ export class AuthController {
     return await this.authService.login(req.user);
   }
 
+  @UseGuards(DoesUserExist)
   @Post('signup')
-  async signUp(@Body() user: UserDto) {
-    return await this.authService.signup(user);
+  async signUp(@Body() user: signupUserDTO) {
+    return await this.authService.create(user);
   }
 }

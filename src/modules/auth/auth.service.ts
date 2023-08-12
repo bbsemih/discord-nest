@@ -30,9 +30,9 @@ export class AuthService {
     return { user, token };
   }
 
-  public async signup(user: signupUserDTO) {
+  public async create(user: signupUserDTO) {
     const pass = await this.hashPassword(user.password);
-    const newUser = await this.userService.create(user.email, pass);
+    const newUser = await this.userService.create({ ...user, password: pass });
     // tslint:disable-next-line: no-string-literal
     const { password, ...result } = newUser['dataValues'];
     const token = await this.generateToken(result);
