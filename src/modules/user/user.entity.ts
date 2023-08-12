@@ -7,19 +7,17 @@ import { Guild } from '../guild/guild.entity';
 export class User extends Model<User> {
   @Column({
     type: DataType.STRING,
-    autoIncrement: true,
-    primaryKey: true,
-    allowNull: false,
     unique: true,
+    primaryKey: true,
   })
   id!: string;
 
   @ForeignKey(() => Guild)
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: true,
   })
-  guildId: number;
+  guildId: string;
 
   @BelongsTo(() => Guild)
   guild: Guild;

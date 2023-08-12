@@ -7,9 +7,8 @@ import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize
 export class Message extends Model<Message> {
   @Column({
     type: DataType.STRING,
-    autoIncrement: true,
+    unique: true,
     primaryKey: true,
-    allowNull: false,
   })
   id!: string;
 

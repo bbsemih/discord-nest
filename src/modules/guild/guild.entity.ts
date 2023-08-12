@@ -2,15 +2,14 @@ import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from '
 import { User } from '../user/user.entity';
 
 @Table({
+  tableName: 'guilds',
   underscored: true,
 })
 export class Guild extends Model<Guild> {
   @Column({
     type: DataType.STRING,
-    autoIncrement: true,
-    primaryKey: true,
-    allowNull: false,
     unique: true,
+    primaryKey: true,
   })
   id!: string;
 

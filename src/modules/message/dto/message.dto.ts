@@ -3,10 +3,10 @@ import { UserDto } from '../../user/dto/user.dto';
 
 export class MessageDTO {
   @IsNotEmpty()
-  readonly id: number;
+  readonly id: string;
 
   @IsNotEmpty()
-  readonly userId: number;
+  readonly userId: string;
 
   @IsNotEmpty()
   readonly user: UserDto;

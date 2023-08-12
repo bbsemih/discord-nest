@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsArray, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsOptional } from 'class-validator';
 
 export class CreateGuildDTO {
   @IsNotEmpty()
@@ -11,7 +11,7 @@ export class CreateGuildDTO {
 
   @IsNotEmpty()
   @IsString()
-  readonly ownerId: number;
+  readonly ownerId: string;
 
   @IsNotEmpty()
   @IsString()

@@ -28,7 +28,7 @@ export class MessageService {
     this.logger.error(`${message} ${error.message}`, 'MessageService', LogLevelEnum.ERROR, 'message.service.ts', LogTypeEnum.SERVICE);
   }
 
-  async create(content: string, userId?: number, guildID?: string): Promise<Message> {
+  async create(content: string, userId?: string, guildID?: string): Promise<Message> {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
@@ -44,7 +44,7 @@ export class MessageService {
       this.logInfo('Message created by user:', user.id);
       return message;
     } catch (error) {
-      this.logError('Error creating message:', error.message); //or only error???
+      this.logError('Error creating message:', error);
       throw error;
     }
   }
@@ -64,7 +64,7 @@ export class MessageService {
     const messages = await this.repo.findAll<Message>({
       where: { userId: userID, guildID: guildID },
     });
-    if (!messages) {
+    if (!messages || messages.length === 0) {
       this.logWarn('Messages not found:', userID);
       throw new NotFoundException('messages not found');
     }
@@ -75,14 +75,14 @@ export class MessageService {
     const message = await this.repo.findByPk<Message>(id);
     if (!message) {
       this.logWarn('Message not found:', id);
-      throw new NotFoundException('user not found');
+      throw new NotFoundException('message not found');
     }
 
     try {
-      await this.repo.destroy({ where: { id } });
-      this.logError('Message deleted:', message.id);
+      await message.destroy();
+      this.logInfo('Message deleted:', message.id);
     } catch (error) {
-      this.logError('Error deleting message:', error.message);
+      this.logError('Error deleting message:', error);
       throw error;
     }
   }
@@ -99,7 +99,7 @@ export class MessageService {
       //this.logInfo('Message updated:', updatedMessage.id);
       return updatedMessage;
     } catch (err) {
-      this.logError('Error updating message:', err.message);
+      this.logError('Error updating message:', err);
       throw err;
     }
   }

@@ -2,16 +2,16 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './user.entity';
 import { USER_REPOSITORY } from '../constants';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 import { LoggerService } from 'src/core/logger/logger.service';
 import { LogLevelEnum, LogTypeEnum } from 'src/core/logger/logger.interface';
 import { signupUserDTO } from '../auth/dto/signup-user.dto';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(USER_REPOSITORY) private readonly repo: typeof User,
-    //@Inject(CACHE_MANAGER) private cacheService: Cache,
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
     private readonly logger: LoggerService,
   ) {}
 
@@ -33,7 +33,7 @@ export class UserService {
       this.logInfo('User created:', newUser.id);
       return newUser;
     } catch (err) {
-      this.logError('Error creating user:', err.message);
+      this.logError('Error creating user:', err);
       throw err;
     }
   }
@@ -63,7 +63,7 @@ export class UserService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
       const user = await this.repo.findByPk<User>(id);
       if (user) {
@@ -78,7 +78,7 @@ export class UserService {
     }
   }
 
-  async update(id: number, attrs: Partial<User>) {
+  async update(id: string, attrs: Partial<User>) {
     const user = await this.repo.findByPk<User>(id);
     if (!user) {
       this.logWarn(`user with id:${id} is not found!`);
@@ -95,7 +95,7 @@ export class UserService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const user = await this.repo.findByPk<User>(id);
     if (!user) {
       this.logWarn(`user with id:${id} is not found!`);
@@ -103,7 +103,7 @@ export class UserService {
     }
 
     try {
-      await this.repo.destroy({ where: { id } });
+      await user.destroy();
       this.logInfo(`user deleted: ${user.email}`, user.id);
     } catch (error) {
       this.logError(`Error deleting user: ${error.message}`, error);

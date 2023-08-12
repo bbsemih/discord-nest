@@ -35,7 +35,7 @@ export class GuildService {
       this.logInfo('Guild created:', newGuild.id);
       return newGuild;
     } catch (error) {
-      this.logError('Error creating guild:', error.message);
+      this.logError('Error creating guild:', error);
       throw error;
     }
   }
@@ -49,13 +49,13 @@ export class GuildService {
     return guild;
   }
 
-  async findAll(ownerId: number): Promise<Guild[]> {
+  async findAll(ownerId: string): Promise<Guild[]> {
     try {
       const guilds = await this.repo.findAll<Guild>({ where: { ownerId } });
       //this.logInfo(`Found ${guilds.length} guild(s) with ownerId: ${ownerId}`, ownerId);
       return guilds;
     } catch (error) {
-      this.logError(`Error finding guilds: ${error.message}`, error);
+      this.logError('Error finding guilds:', error);
       throw error;
     }
   }
@@ -68,10 +68,10 @@ export class GuildService {
     }
 
     try {
-      await this.repo.destroy({ where: { id } });
+      await guild.destroy();
       this.logInfo('Guild deleted:', guild.id);
     } catch (error) {
-      this.logError('Error deleting guild:', error.message);
+      this.logError('Error deleting guild:', error);
       throw error;
     }
   }
@@ -88,7 +88,7 @@ export class GuildService {
       this.logInfo('Guild updated:', updatedGuild.id);
       return updatedGuild;
     } catch (err) {
-      this.logError('Error updating guild:', err.message);
+      this.logError('Error updating guild:', err);
       throw err;
     }
   }

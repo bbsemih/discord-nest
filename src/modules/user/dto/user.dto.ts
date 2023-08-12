@@ -1,10 +1,10 @@
-import { IsNotEmpty, IsEmail, MinLength, IsString, IsDate, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsEmail, MinLength, IsString, IsDateString, IsBoolean } from 'class-validator';
 import { Expose } from 'class-transformer';
 
 export class UserDto {
   @IsNotEmpty()
   @Expose()
-  readonly id: number;
+  readonly id: string;
 
   @IsNotEmpty()
   @Expose()
@@ -24,7 +24,7 @@ export class UserDto {
   @Expose()
   readonly password: string;
 
-  @IsDate()
+  @IsDateString()
   @Expose()
   readonly dateOfBirth: Date;
 

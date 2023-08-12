@@ -3,7 +3,7 @@ import { Controller, Get, Post, UseInterceptors, Param, Delete, Patch, Body } fr
 import { GuildService } from './guild.service';
 import { Guild } from './guild.entity';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
-import { ApiTags, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('guild')
 @ApiTags('guild')
@@ -11,11 +11,6 @@ export class GuildController {
   constructor(private readonly guildService: GuildService) {}
 
   @Post()
-  @ApiPropertyOptional({
-    description: 'The age of a cat',
-    minimum: 1,
-    default: 1,
-  })
   createGuild(@Body() createGuildDTO: CreateGuildDTO): Promise<Guild> {
     return this.guildService.create(createGuildDTO);
   }
@@ -28,7 +23,9 @@ export class GuildController {
   }
 
   @Get()
-  findAllGuilds(ownerId: number): Promise<Guild[]> {
+  findAllGuilds(): Promise<Guild[]> {
+    // might need to get ownerId from the authenticated user
+    const ownerId = 'user_id_here'; // Replace with the actual ownerId
     return this.guildService.findAll(ownerId);
   }
 
