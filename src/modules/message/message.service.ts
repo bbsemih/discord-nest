@@ -16,11 +16,11 @@ export class MessageService {
     private readonly logger: LoggerService,
   ) {}
 
-  private logInfo(message: string, id: number) {
+  private logInfo(message: string, id: string) {
     this.logger.info(`${message} ${id}`, 'MessageService', LogLevelEnum.INFO, 'message.service.ts', LogTypeEnum.SERVICE);
   }
 
-  private logWarn(message: string, id: number) {
+  private logWarn(message: string, id: string) {
     this.logger.warn(`${message} ${id}`, 'MessageService', LogLevelEnum.WARN, 'message.service.ts', LogTypeEnum.SERVICE);
   }
 
@@ -49,7 +49,7 @@ export class MessageService {
     }
   }
 
-  async findOne(id: number, guildId?: string) {
+  async findOne(id: string, guildId?: string) {
     const message = await this.repo.findOne<Message>({
       where: { id, guildID: guildId },
     });
@@ -60,7 +60,7 @@ export class MessageService {
     return message;
   }
 
-  async findAll(userID: number, guildID: string) {
+  async findAll(userID: string, guildID: string) {
     const messages = await this.repo.findAll<Message>({
       where: { userId: userID, guildID: guildID },
     });
@@ -71,7 +71,7 @@ export class MessageService {
     return messages;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const message = await this.repo.findByPk<Message>(id);
     if (!message) {
       this.logWarn('Message not found:', id);
@@ -87,7 +87,7 @@ export class MessageService {
     }
   }
 
-  async update(id: number, attrs: Partial<Message>) {
+  async update(id: string, attrs: Partial<Message>) {
     const message = await this.repo.findByPk<Message>(id);
     if (!message) {
       this.logWarn('Message not found:', id);
@@ -96,7 +96,7 @@ export class MessageService {
     Object.assign(message, attrs);
     try {
       const updatedMessage = await message.save();
-      this.logInfo('Message updated:', updatedMessage.id);
+      //this.logInfo('Message updated:', updatedMessage.id);
       return updatedMessage;
     } catch (err) {
       this.logError('Error updating message:', err.message);

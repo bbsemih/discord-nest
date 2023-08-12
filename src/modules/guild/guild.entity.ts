@@ -1,13 +1,16 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { User } from '../user/user.entity';
 
-@Table
+@Table({
+  underscored: true,
+})
 export class Guild extends Model<Guild> {
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     autoIncrement: true,
     primaryKey: true,
     allowNull: false,
+    unique: true,
   })
   id!: string;
 
@@ -25,10 +28,10 @@ export class Guild extends Model<Guild> {
 
   @ForeignKey(() => User)
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: false,
   })
-  ownerId!: number;
+  ownerId!: string;
 
   @BelongsTo(() => User)
   owner: User;

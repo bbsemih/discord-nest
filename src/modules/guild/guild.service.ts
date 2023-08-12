@@ -29,11 +29,11 @@ export class GuildService {
     this.logger.error(`${message} ${error.message}`, 'GuildService', LogLevelEnum.ERROR, 'guild.service.ts', LogTypeEnum.SERVICE);
   }
 
-  async create(createGuildDTO: CreateGuildDTO): Promise<Guild> {
+  async create(guild: CreateGuildDTO): Promise<Guild> {
     try {
-      const guild = await this.repo.create<Guild>(createGuildDTO);
-      this.logInfo('Guild created:', guild.id);
-      return guild;
+      const newGuild = await this.repo.create<Guild>(guild);
+      this.logInfo('Guild created:', newGuild.id);
+      return newGuild;
     } catch (error) {
       this.logError('Error creating guild:', error.message);
       throw error;
@@ -49,10 +49,10 @@ export class GuildService {
     return guild;
   }
 
-  async findAll(ownerId: string): Promise<Guild[]> {
+  async findAll(ownerId: number): Promise<Guild[]> {
     try {
       const guilds = await this.repo.findAll<Guild>({ where: { ownerId } });
-      this.logInfo(`Found ${guilds.length} guild(s) with ownerId: ${ownerId}`, ownerId);
+      //this.logInfo(`Found ${guilds.length} guild(s) with ownerId: ${ownerId}`, ownerId);
       return guilds;
     } catch (error) {
       this.logError(`Error finding guilds: ${error.message}`, error);

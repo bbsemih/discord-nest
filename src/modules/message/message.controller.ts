@@ -16,17 +16,17 @@ export class MessageController {
   }
 
   @Get(':id')
-  async getMessage(@Param('id') id: number): Promise<Message> {
+  async getMessage(@Param('id') id: string): Promise<Message> {
     return this.messageService.findOne(id);
   }
 
   @Patch(':id')
-  async updateMessage(@Param('id') id: number, @Body() updateMessageDto: UpdateMessageDto): Promise<Message> {
+  async updateMessage(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto): Promise<Message> {
     return this.messageService.update(id, updateMessageDto);
   }
 
   @Delete(':id')
-  async deleteMessage(@Param('id') id: number): Promise<void> {
+  async deleteMessage(@Param('id') id: string): Promise<void> {
     await this.messageService.remove(id);
   }
 }

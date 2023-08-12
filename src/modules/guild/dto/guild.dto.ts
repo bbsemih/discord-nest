@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsArray, IsNumber, IsOptional, Min, Max } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsNumber } from 'class-validator';
 import { Expose } from 'class-transformer';
 import { UserDto } from '../../user/dto/user.dto';
 

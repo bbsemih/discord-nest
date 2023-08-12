@@ -15,11 +15,11 @@ export class UserService {
     private readonly logger: LoggerService,
   ) {}
 
-  private logInfo(message: string, id?: number) {
+  private logInfo(message: string, id?: string) {
     this.logger.info(`${message} ${id}`, 'UsersService', LogLevelEnum.INFO, 'user.service.ts', LogTypeEnum.SERVICE);
   }
 
-  private logWarn(message: string, id?: number) {
+  private logWarn(message: string, id?: string) {
     this.logger.warn(`${message} ${id}`, 'UsersService', LogLevelEnum.WARN, 'user.service.ts', LogTypeEnum.SERVICE);
   }
 

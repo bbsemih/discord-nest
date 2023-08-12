@@ -1,9 +1,9 @@
 import { CreateGuildDTO } from './dto/create-guild.dto';
-import { Controller, Get, Post, UseInterceptors, Param, Delete, Inject, Patch, Body } from '@nestjs/common';
+import { Controller, Get, Post, UseInterceptors, Param, Delete, Patch, Body } from '@nestjs/common';
 import { GuildService } from './guild.service';
 import { Guild } from './guild.entity';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
-import { ApiOperation, ApiTags, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiTags, ApiPropertyOptional } from '@nestjs/swagger';
 
 @Controller('guild')
 @ApiTags('guild')
@@ -28,7 +28,7 @@ export class GuildController {
   }
 
   @Get()
-  findAllGuilds(ownerId: string): Promise<Guild[]> {
+  findAllGuilds(ownerId: number): Promise<Guild[]> {
     return this.guildService.findAll(ownerId);
   }
 

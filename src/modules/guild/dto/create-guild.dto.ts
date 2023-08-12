@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsArray, IsNumber, IsOptional, Min, Max } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateGuildDTO {
   @IsNotEmpty()

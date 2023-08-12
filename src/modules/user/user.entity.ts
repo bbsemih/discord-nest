@@ -1,15 +1,18 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Guild } from '../guild/guild.entity';
 
-@Table
+@Table({
+  underscored: true,
+})
 export class User extends Model<User> {
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     autoIncrement: true,
     primaryKey: true,
     allowNull: false,
+    unique: true,
   })
-  id: number;
+  id!: string;
 
   @ForeignKey(() => Guild)
   @Column({

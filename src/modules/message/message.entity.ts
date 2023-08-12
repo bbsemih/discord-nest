@@ -1,22 +1,24 @@
 import { User } from '../user/user.entity';
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 
-@Table
+@Table({
+  underscored: true,
+})
 export class Message extends Model<Message> {
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     autoIncrement: true,
     primaryKey: true,
     allowNull: false,
   })
-  id: number;
+  id!: string;
 
   @ForeignKey(() => User)
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: false,
   })
-  userId: number;
+  userId: string;
 
   @BelongsTo(() => User)
   user: User;
