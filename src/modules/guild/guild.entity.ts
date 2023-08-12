@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany, PrimaryKey, AutoIncrement } from 'sequelize-typescript';
 import { User } from '../user/user.entity';
 
 @Table({
@@ -6,12 +6,10 @@ import { User } from '../user/user.entity';
   underscored: true,
 })
 export class Guild extends Model<Guild> {
-  @Column({
-    type: DataType.STRING,
-    unique: true,
-    primaryKey: true,
-  })
-  id!: string;
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.BIGINT)
+  id: number;
 
   @Column({
     type: DataType.STRING,
@@ -27,7 +25,7 @@ export class Guild extends Model<Guild> {
 
   @ForeignKey(() => User)
   @Column({
-    type: DataType.STRING,
+    type: DataType.UUID,
     allowNull: false,
   })
   ownerId!: string;

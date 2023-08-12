@@ -16,11 +16,11 @@ export class MessageService {
     private readonly logger: LoggerService,
   ) {}
 
-  private logInfo(message: string, id: string) {
+  private logInfo(message: string, id: string | number) {
     this.logger.info(`${message} ${id}`, 'MessageService', LogLevelEnum.INFO, 'message.service.ts', LogTypeEnum.SERVICE);
   }
 
-  private logWarn(message: string, id: string) {
+  private logWarn(message: string, id: string | number) {
     this.logger.warn(`${message} ${id}`, 'MessageService', LogLevelEnum.WARN, 'message.service.ts', LogTypeEnum.SERVICE);
   }
 

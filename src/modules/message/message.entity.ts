@@ -1,21 +1,21 @@
 import { User } from '../user/user.entity';
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo, PrimaryKey, AutoIncrement } from 'sequelize-typescript';
+import { Guild } from '../guild/guild.entity';
 
 @Table({
   underscored: true,
 })
 export class Message extends Model<Message> {
-  @Column({
-    type: DataType.STRING,
-    unique: true,
-    primaryKey: true,
-  })
-  id!: string;
+  @PrimaryKey
+  @AutoIncrement
+  @Column(DataType.BIGINT)
+  id: number;
 
   @ForeignKey(() => User)
   @Column({
-    type: DataType.STRING,
+    type: DataType.UUID,
     allowNull: false,
+    field: 'user_id',
   })
   userId: string;
 
@@ -40,6 +40,7 @@ export class Message extends Model<Message> {
   })
   updatedAt: Date;
 
+  @ForeignKey(() => Guild)
   @Column({
     type: DataType.STRING,
     allowNull: false,

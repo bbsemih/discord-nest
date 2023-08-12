@@ -4,23 +4,33 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { signupUserDTO } from './dto/signup-user.dto';
 import { loginUserDTO } from './dto/login-user.dto';
+import { UserDto } from '../user/dto/user.dto';
+import { LoggerService } from 'src/core/logger/logger.service';
+import { LogLevelEnum, LogTypeEnum } from 'src/core/logger/logger.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService, private readonly jwtService: JwtService) {}
+  constructor(private readonly userService: UserService, private readonly jwtService: JwtService, private readonly logger: LoggerService) {}
+
+  private logInfo(message: string, id?: string) {
+    this.logger.info(`${message} ${id}`, 'AuthService', LogLevelEnum.INFO, 'auth.service.ts', LogTypeEnum.SERVICE);
+  }
+
+  private logWarn(message: string, id?: string) {
+    this.logger.warn(`${message} ${id}`, 'AuthService', LogLevelEnum.WARN, 'auth.service.ts', LogTypeEnum.SERVICE);
+  }
+
+  private logError(message: string, error: any) {
+    this.logger.error(`${message} ${error.message}`, 'AuthService', LogLevelEnum.ERROR, 'auth.service.ts', LogTypeEnum.SERVICE);
+  }
 
   async validateUser(username: string, pass: string) {
     const user = await this.userService.findOneByEmail(username);
-    if (!user) {
-      return null;
-    }
+    if (!user) return null;
 
     const match = await this.comparePassword(pass, user.password);
-    if (!match) {
-      return null;
-    }
+    if (!match) return null;
 
-    // tslint:disable-next-line: no-string-literal
     const { password, ...result } = user['dataValues'];
     return result;
   }
@@ -30,14 +40,26 @@ export class AuthService {
     return { user, token };
   }
 
-  public async create(user: signupUserDTO) {
-    const pass = await this.hashPassword(user.password);
-    const newUser = await this.userService.create({ ...user, password: pass });
-    // tslint:disable-next-line: no-string-literal
-    const { password, ...result } = newUser['dataValues'];
-    const token = await this.generateToken(result);
+  public async signUp(user: signupUserDTO): Promise<{ user: UserDto; token: string }> {
+    try {
+      const userExists = await this.userService.findOneByEmail(user.email);
+      if (userExists) {
+        this.logWarn('User already exists', user.email);
+        throw new Error('User already exists');
+      }
 
-    return { user: result, token };
+      const hashedPassword = await this.hashPassword(user.password);
+      const newUserWithoutId = { ...user, password: hashedPassword };
+      const newUser = await this.userService.create(newUserWithoutId);
+
+      this.logInfo('User signed up', newUser.id);
+
+      const token = await this.generateToken(newUser);
+      return { user: newUser, token };
+    } catch (error) {
+      this.logError('Error creating user:', error);
+      throw error;
+    }
   }
 
   private async generateToken(user) {

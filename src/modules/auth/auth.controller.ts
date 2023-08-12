@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { signupUserDTO } from './dto/signup-user.dto';
 import { DoesUserExist } from 'src/core/guards/doesUserExist.guard';
+import { UserDto } from '../user/dto/user.dto';
 
 //session here???
 @ApiTags('auth')
@@ -27,7 +28,7 @@ export class AuthController {
 
   @UseGuards(DoesUserExist)
   @Post('signup')
-  async signUp(@Body() user: signupUserDTO) {
-    return await this.authService.create(user);
+  async signUp(@Body() user: signupUserDTO): Promise<{ user: UserDto; token: string }> {
+    return await this.authService.signUp(user);
   }
 }

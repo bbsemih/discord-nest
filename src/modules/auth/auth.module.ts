@@ -6,9 +6,11 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
+import { LoggerModule } from 'src/core/logger/logger.module';
 
 @Module({
   imports: [
+    LoggerModule,
     PassportModule,
     UserModule,
     JwtModule.register({

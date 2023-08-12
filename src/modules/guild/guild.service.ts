@@ -17,11 +17,11 @@ export class GuildService {
     private readonly logger: LoggerService,
   ) {}
 
-  private logInfo(message: string, id: string) {
+  private logInfo(message: string, id: string | number) {
     this.logger.info(`${message} ${id}`, 'GuildService', LogLevelEnum.INFO, 'guild.service.ts', LogTypeEnum.SERVICE);
   }
 
-  private logWarn(message: string, id: string) {
+  private logWarn(message: string, id: string | number) {
     this.logger.warn(`${message} ${id}`, 'GuildService', LogLevelEnum.WARN, 'guild.service.ts', LogTypeEnum.SERVICE);
   }
 

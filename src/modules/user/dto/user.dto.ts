@@ -4,7 +4,7 @@ import { Expose } from 'class-transformer';
 export class UserDto {
   @IsNotEmpty()
   @Expose()
-  readonly id: string;
+  readonly id?: string;
 
   @IsNotEmpty()
   @Expose()
@@ -30,13 +30,13 @@ export class UserDto {
 
   @IsString()
   @Expose()
-  readonly role: string;
+  readonly role?: string;
 
   @IsNotEmpty()
   @Expose()
-  readonly status: string;
+  readonly status?: string;
 
   @IsBoolean()
   @Expose()
-  readonly isBot: boolean;
+  readonly isBot?: boolean;
 }

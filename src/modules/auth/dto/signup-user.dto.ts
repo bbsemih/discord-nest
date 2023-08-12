@@ -15,7 +15,7 @@ export class signupUserDTO {
   readonly password: string;
 
   @IsDate()
-  @Type(() => Date) // Use Type decorator along with Transform
+  @Type(() => Date)
   @Transform(({ value }) => new Date(value))
   readonly dateOfBirth: Date;
 }
