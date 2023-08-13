@@ -16,16 +16,16 @@ export class UserController {
     return user;
   }
 
-  @Get()
-  async findAllUsers(@Query('email') email: string) {
-    return this.userService.findOneByEmail(email);
-  }
-
   //@UseInterceptors(CacheInterceptor)
   //@CacheTTL(30)
   @Get('/:id')
   async findUserById(@Param('id') id: string) {
     return this.userService.findOne(id);
+  }
+
+  @Get('/:username')
+  async findUserByUsername(@Param('username') username: string) {
+    return this.userService.findOneByUsername(username);
   }
 
   @Delete('/:id')

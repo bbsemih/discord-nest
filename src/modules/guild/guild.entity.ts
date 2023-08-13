@@ -33,7 +33,7 @@ export class Guild extends Model<Guild> {
   @BelongsTo(() => User)
   owner: User;
 
-  @HasMany(() => User)
+  @HasMany(() => User, 'guildId')
   members!: User[];
 
   @Column({

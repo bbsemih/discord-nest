@@ -4,6 +4,7 @@ import { GuildService } from './guild.service';
 import { Guild } from './guild.entity';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from '../user/user.entity';
 
 @Controller('guild')
 @ApiTags('guild')
@@ -20,6 +21,11 @@ export class GuildController {
   @Get('/:id')
   findGuildById(@Param('id') id: string): Promise<Guild> {
     return this.guildService.findOne(id);
+  }
+
+  @Get('/:id/users')
+  async findUsersInGuild(@Param('id') guildId: string): Promise<User[]> {
+    return this.guildService.findUsersInGuild(guildId);
   }
 
   @Get()

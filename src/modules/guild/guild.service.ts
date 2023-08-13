@@ -7,6 +7,7 @@ import { LoggerService } from 'src/core/logger/logger.service';
 import { CreateGuildDTO } from './dto/create-guild.dto';
 import { UserService } from '../user/user.service';
 import { LoggerBase } from 'src/core/logger/logger.base';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class GuildService extends LoggerBase {
@@ -50,10 +51,27 @@ export class GuildService extends LoggerBase {
   async findAll(ownerId: string): Promise<Guild[]> {
     try {
       const guilds = await this.repo.findAll<Guild>({ where: { ownerId } });
-      //this.logInfo(`Found ${guilds.length} guild(s) with ownerId: ${ownerId}`, ownerId);
+      this.logInfo(`Found ${guilds.length} guild(s) with ownerId: ${ownerId}`, ownerId);
       return guilds;
     } catch (error) {
       this.logError('Error finding guilds:', error);
+      throw error;
+    }
+  }
+
+  async findUsersInGuild(guildId: string): Promise<User[]> {
+    try {
+      const guild = await this.repo.findByPk<Guild>(guildId, {
+        include: [{ model: User, as: 'members' }],
+      });
+
+      if (!guild) {
+        throw new NotFoundException('Guild not found');
+      }
+
+      return guild.members;
+    } catch (error) {
+      this.logError('Error finding users in guild:', error);
       throw error;
     }
   }

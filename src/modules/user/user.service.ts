@@ -47,11 +47,11 @@ export class UserService extends LoggerBase {
     }
   }
 
-  async findOneByEmail(email: string) {
+  async findOneByUsername(username: string) {
     try {
-      const user = await this.repo.findOne<User>({ where: { email } });
+      const user = await this.repo.findOne<User>({ where: { username } });
       if (!user) {
-        this.logWarn(`user with email:${email} is not found!`);
+        this.logWarn(`user with username: '${username}' is not found!`);
         return null;
       }
       return user;

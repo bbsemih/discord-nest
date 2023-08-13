@@ -3,6 +3,7 @@ import { Table, Column, Model, DataType, ForeignKey, BelongsTo, PrimaryKey, Auto
 import { Guild } from '../guild/guild.entity';
 
 @Table({
+  tableName: 'messages',
   underscored: true,
 })
 export class Message extends Model<Message> {

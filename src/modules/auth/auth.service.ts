@@ -23,7 +23,7 @@ export class AuthService extends LoggerBase {
   }
 
   async validateUser(username: string, pass: string) {
-    const user = await this.userService.findOneByEmail(username);
+    const user = await this.userService.findOneByUsername(username);
     if (!user) return null;
 
     const match = await this.comparePassword(pass, user.password);
@@ -40,7 +40,7 @@ export class AuthService extends LoggerBase {
 
   public async signUp(user: signupUserDTO): Promise<{ user: UserDto; token: string }> {
     try {
-      const userExists = await this.userService.findOneByEmail(user.email);
+      const userExists = await this.userService.findOneByUsername(user.username);
       if (userExists) {
         throw new Error('User already exists');
       }
