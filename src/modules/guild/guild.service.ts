@@ -4,29 +4,27 @@ import { GUILD_REPOSITORY } from '../constants';
 import { Guild } from './guild.entity';
 import { Cache } from 'cache-manager';
 import { LoggerService } from 'src/core/logger/logger.service';
-import { LogLevelEnum, LogTypeEnum } from 'src/core/logger/logger.interface';
 import { CreateGuildDTO } from './dto/create-guild.dto';
 import { UserService } from '../user/user.service';
+import { LoggerBase } from 'src/core/logger/logger.base';
 
 @Injectable()
-export class GuildService {
+export class GuildService extends LoggerBase {
   constructor(
     private readonly userService: UserService,
     @Inject(GUILD_REPOSITORY) private readonly repo: typeof Guild,
     @Inject(CACHE_MANAGER) private cacheService: Cache,
-    private readonly logger: LoggerService,
-  ) {}
-
-  private logInfo(message: string, id: string | number) {
-    this.logger.info(`${message} ${id}`, 'GuildService', LogLevelEnum.INFO, 'guild.service.ts', LogTypeEnum.SERVICE);
+    protected readonly logger: LoggerService,
+  ) {
+    super(logger);
   }
 
-  private logWarn(message: string, id: string | number) {
-    this.logger.warn(`${message} ${id}`, 'GuildService', LogLevelEnum.WARN, 'guild.service.ts', LogTypeEnum.SERVICE);
+  protected getServiceName(): string {
+    return 'GuildService';
   }
 
-  private logError(message: string, error: any) {
-    this.logger.error(`${message} ${error.message}`, 'GuildService', LogLevelEnum.ERROR, 'guild.service.ts', LogTypeEnum.SERVICE);
+  protected getFileName(): string {
+    return __filename;
   }
 
   async create(guild: CreateGuildDTO): Promise<Guild> {
