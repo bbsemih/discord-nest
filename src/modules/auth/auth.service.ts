@@ -6,22 +6,20 @@ import { signupUserDTO } from './dto/signup-user.dto';
 import { loginUserDTO } from './dto/login-user.dto';
 import { UserDto } from '../user/dto/user.dto';
 import { LoggerService } from 'src/core/logger/logger.service';
-import { LogLevelEnum, LogTypeEnum } from 'src/core/logger/logger.interface';
+import { LoggerBase } from 'src/core/logger/logger.base';
 
 @Injectable()
-export class AuthService {
-  constructor(private readonly userService: UserService, private readonly jwtService: JwtService, private readonly logger: LoggerService) {}
-
-  private logInfo(message: string, id?: string) {
-    this.logger.info(`${message} ${id}`, 'AuthService', LogLevelEnum.INFO, 'auth.service.ts', LogTypeEnum.SERVICE);
+export class AuthService extends LoggerBase {
+  constructor(private readonly userService: UserService, private readonly jwtService: JwtService, protected readonly logger: LoggerService) {
+    super(logger);
   }
 
-  private logWarn(message: string, id?: string) {
-    this.logger.warn(`${message} ${id}`, 'AuthService', LogLevelEnum.WARN, 'auth.service.ts', LogTypeEnum.SERVICE);
+  protected getServiceName(): string {
+    return 'AuthService';
   }
 
-  private logError(message: string, error: any) {
-    this.logger.error(`${message} ${error.message}`, 'AuthService', LogLevelEnum.ERROR, 'auth.service.ts', LogTypeEnum.SERVICE);
+  protected getFileName(): string {
+    return __filename;
   }
 
   async validateUser(username: string, pass: string) {
@@ -44,7 +42,6 @@ export class AuthService {
     try {
       const userExists = await this.userService.findOneByEmail(user.email);
       if (userExists) {
-        this.logWarn('User already exists', user.email);
         throw new Error('User already exists');
       }
 

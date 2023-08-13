@@ -5,27 +5,25 @@ import { MESSAGE_REPOSITORY } from '../constants';
 import { Message } from './message.entity';
 import { Cache } from 'cache-manager';
 import { LoggerService } from 'src/core/logger/logger.service';
-import { LogLevelEnum, LogTypeEnum } from 'src/core/logger/logger.interface';
+import { LoggerBase } from 'src/core/logger/logger.base';
 
 @Injectable()
-export class MessageService {
+export class MessageService extends LoggerBase {
   constructor(
     private readonly userService: UserService,
     @Inject(MESSAGE_REPOSITORY) private readonly repo: typeof Message,
     //@Inject(CACHE_MANAGER) private cacheService: Cache,
-    private readonly logger: LoggerService,
-  ) {}
-
-  private logInfo(message: string, id: string | number) {
-    this.logger.info(`${message} ${id}`, 'MessageService', LogLevelEnum.INFO, 'message.service.ts', LogTypeEnum.SERVICE);
+    protected readonly logger: LoggerService,
+  ) {
+    super(logger);
   }
 
-  private logWarn(message: string, id: string | number) {
-    this.logger.warn(`${message} ${id}`, 'MessageService', LogLevelEnum.WARN, 'message.service.ts', LogTypeEnum.SERVICE);
+  protected getServiceName(): string {
+    return 'MessageService';
   }
 
-  private logError(message: string, error: any) {
-    this.logger.error(`${message} ${error.message}`, 'MessageService', LogLevelEnum.ERROR, 'message.service.ts', LogTypeEnum.SERVICE);
+  protected getFileName(): string {
+    return __filename;
   }
 
   async create(content: string, userId?: string, guildID?: string): Promise<Message> {
@@ -80,7 +78,7 @@ export class MessageService {
 
     try {
       await message.destroy();
-      this.logInfo('Message deleted:', message.id);
+      this.logInfo('Message deleted:', message.id); //check here
     } catch (error) {
       this.logError('Error deleting message:', error);
       throw error;

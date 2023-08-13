@@ -3,28 +3,26 @@ import { User } from './user.entity';
 import { USER_REPOSITORY } from '../constants';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { LoggerService } from 'src/core/logger/logger.service';
-import { LogLevelEnum, LogTypeEnum } from 'src/core/logger/logger.interface';
 import { Cache } from 'cache-manager';
 import { UserDto } from './dto/user.dto';
+import { LoggerBase } from 'src/core/logger/logger.base';
 
 @Injectable()
-export class UserService {
+export class UserService extends LoggerBase {
   constructor(
     @Inject(USER_REPOSITORY) private readonly repo: typeof User,
     @Inject(CACHE_MANAGER) private cacheService: Cache,
-    private readonly logger: LoggerService,
-  ) {}
-
-  private logInfo(message: string, id?: string) {
-    this.logger.info(`${message} ${id}`, 'UsersService', LogLevelEnum.INFO, 'user.service.ts', LogTypeEnum.SERVICE);
+    protected readonly logger: LoggerService,
+  ) {
+    super(logger);
   }
 
-  private logWarn(message: string, id?: string) {
-    this.logger.warn(`${message} ${id}`, 'UsersService', LogLevelEnum.WARN, 'user.service.ts', LogTypeEnum.SERVICE);
+  protected getServiceName(): string {
+    return 'UserService';
   }
 
-  private logError(message: string, error: any) {
-    this.logger.error(`${message} ${error.message}`, 'UsersService', LogLevelEnum.ERROR, 'user.service.ts', LogTypeEnum.SERVICE);
+  protected getFileName(): string {
+    return __filename;
   }
 
   async create(user: UserDto): Promise<User> {
