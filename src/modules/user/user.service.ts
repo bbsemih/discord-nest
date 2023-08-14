@@ -6,6 +6,7 @@ import { LoggerService } from 'src/core/logger/logger.service';
 import { Cache } from 'cache-manager';
 import { UserDto } from './dto/user.dto';
 import { LoggerBase } from 'src/core/logger/logger.base';
+import { basename } from 'path';
 
 @Injectable()
 export class UserService extends LoggerBase {
@@ -18,11 +19,11 @@ export class UserService extends LoggerBase {
   }
 
   protected getServiceName(): string {
-    return 'UserService';
+    return this.constructor.name;
   }
 
   protected getFileName(): string {
-    return __filename;
+    return basename(__filename);
   }
 
   async create(user: UserDto): Promise<User> {
@@ -47,27 +48,19 @@ export class UserService extends LoggerBase {
     }
   }
 
-  async findOneByUsername(username: string) {
+  async findOne(username: string) {
+    const cachedUser = await this.cacheService.get<User>(username);
+    if (cachedUser) {
+      this.logInfo(`user found in cache: ${cachedUser.email}`, cachedUser.id);
+      return cachedUser;
+    }
     try {
       const user = await this.repo.findOne<User>({ where: { username } });
-      if (!user) {
-        this.logWarn(`user with username: '${username}' is not found!`);
-        return null;
-      }
-      return user;
-    } catch (err) {
-      this.logError(`Error finding user: ${err.message}`, err);
-      throw err;
-    }
-  }
-
-  async findOne(id: string) {
-    try {
-      const user = await this.repo.findByPk<User>(id);
       if (user) {
+        await this.cacheService.set(username, user, 100000);
         this.logInfo(`user found: ${user.email}`, user.id);
       } else {
-        this.logWarn(`user with id:${id} is not found!`);
+        this.logWarn(`user with email:${username} is not found!`);
       }
       return user;
     } catch (err) {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseInterceptors, Param, Query, Delete, Inject, Patch, Body } from '@nestjs/common';
+import { Controller, Get, UseInterceptors, Param, Delete, Inject, Patch, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,16 +16,11 @@ export class UserController {
     return user;
   }
 
-  //@UseInterceptors(CacheInterceptor)
-  //@CacheTTL(30)
-  @Get('/:id')
-  async findUserById(@Param('id') id: string) {
-    return this.userService.findOne(id);
-  }
-
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30)
   @Get('/:username')
-  async findUserByUsername(@Param('username') username: string) {
-    return this.userService.findOneByUsername(username);
+  async findOne(@Param('username') username: string) {
+    return this.userService.findOne(username);
   }
 
   @Delete('/:id')

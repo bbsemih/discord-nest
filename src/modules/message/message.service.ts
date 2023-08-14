@@ -6,6 +6,7 @@ import { Message } from './message.entity';
 import { Cache } from 'cache-manager';
 import { LoggerService } from 'src/core/logger/logger.service';
 import { LoggerBase } from 'src/core/logger/logger.base';
+import { basename } from 'path';
 
 @Injectable()
 export class MessageService extends LoggerBase {
@@ -19,11 +20,11 @@ export class MessageService extends LoggerBase {
   }
 
   protected getServiceName(): string {
-    return 'MessageService';
+    return this.constructor.name;
   }
 
   protected getFileName(): string {
-    return __filename;
+    return basename(__filename);
   }
 
   async create(content: string, userId?: string, guildID?: string): Promise<Message> {

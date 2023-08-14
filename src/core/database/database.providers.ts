@@ -26,6 +26,7 @@ export const databaseProviders = [
           config = databaseConfig.development;
       }
       const sequelize = new Sequelize(config);
+      console.log('bilgi: ', config);
       sequelize.addModels([User, Message, Guild]);
       await sequelize.sync();
       return sequelize;

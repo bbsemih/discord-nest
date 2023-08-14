@@ -16,7 +16,11 @@ async function bootstrap() {
   });
   app.use(helmet());
 
-  const config = new DocumentBuilder().setTitle('discord-nest').setDescription("The API documentation for 'discord-nest'").setVersion('1.0.0').build();
+  const config = new DocumentBuilder()
+    .setTitle('discord-nest')
+    .setDescription("The API documentation for 'discord-nest' - Semih Berkay Ozturk")
+    .setVersion('1.0.0')
+    .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1/swagger', app, document, {
@@ -30,12 +34,11 @@ async function bootstrap() {
     app.enableCors({
       origin: origin.length === 0 ? '*' : origin,
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      //will add more options
+      //add more options
     });
   } else {
     app.enableCors();
   }
-
   await app.listen(3000);
 }
 bootstrap();

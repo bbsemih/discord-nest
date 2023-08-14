@@ -7,6 +7,7 @@ import { loginUserDTO } from './dto/login-user.dto';
 import { UserDto } from '../user/dto/user.dto';
 import { LoggerService } from 'src/core/logger/logger.service';
 import { LoggerBase } from 'src/core/logger/logger.base';
+import { basename } from 'path';
 
 @Injectable()
 export class AuthService extends LoggerBase {
@@ -15,15 +16,15 @@ export class AuthService extends LoggerBase {
   }
 
   protected getServiceName(): string {
-    return 'AuthService';
+    return this.constructor.name;
   }
 
   protected getFileName(): string {
-    return __filename;
+    return basename(__filename);
   }
 
   async validateUser(username: string, pass: string) {
-    const user = await this.userService.findOneByUsername(username);
+    const user = await this.userService.findOne(username);
     if (!user) return null;
 
     const match = await this.comparePassword(pass, user.password);
@@ -40,7 +41,7 @@ export class AuthService extends LoggerBase {
 
   public async signUp(user: signupUserDTO): Promise<{ user: UserDto; token: string }> {
     try {
-      const userExists = await this.userService.findOneByUsername(user.username);
+      const userExists = await this.userService.findOne(user.username);
       if (userExists) {
         throw new Error('User already exists');
       }

@@ -8,6 +8,7 @@ import { CreateGuildDTO } from './dto/create-guild.dto';
 import { UserService } from '../user/user.service';
 import { LoggerBase } from 'src/core/logger/logger.base';
 import { User } from '../user/user.entity';
+import { basename } from 'path';
 
 @Injectable()
 export class GuildService extends LoggerBase {
@@ -21,11 +22,11 @@ export class GuildService extends LoggerBase {
   }
 
   protected getServiceName(): string {
-    return 'GuildService';
+    return this.constructor.name;
   }
 
   protected getFileName(): string {
-    return __filename;
+    return basename(__filename);
   }
 
   async create(guild: CreateGuildDTO): Promise<Guild> {
