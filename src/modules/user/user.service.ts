@@ -86,16 +86,16 @@ export class UserService extends LoggerBase {
     }
   }
 
-  async remove(id: string) {
-    const user = await this.repo.findByPk<User>(id);
+  async remove(username: string) {
+    const user = await this.repo.findOne<User>({ where: { username } });
     if (!user) {
-      this.logWarn(`user with id:${id} is not found!`);
+      this.logWarn(`user with username:${username} is not found!`);
       throw new NotFoundException('user not found');
     }
 
     try {
       await user.destroy();
-      this.logInfo(`user deleted: ${user.email}`, user.id);
+      this.logInfo(`user deleted: ${user.username}`, user.id);
     } catch (error) {
       this.logError(`Error deleting user: ${error.message}`, error);
       throw error;

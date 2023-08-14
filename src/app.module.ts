@@ -25,7 +25,6 @@ const cookieSession = require('cookie-session');
     JwtModule.register({
       secret: process.env.TOKEN_SECRET,
     }),
-    CacheModule.register({ isGlobal: true }),
     ConfigModule.forRoot({ isGlobal: true }),
     WinstonModule.forRoot({
       transports: [
@@ -46,8 +45,8 @@ const cookieSession = require('cookie-session');
       store: typeof redisStore,
       host: process.env.REDIS_HOST,
       port: process.env.REDIS_PORT,
-      //add redis username and password
-      ttl: 600,
+      username: process.env.REDIS_USERNAME,
+      password: process.env.REDIS_PASSWORD,
     }),
     GuildModule,
     UserModule,
