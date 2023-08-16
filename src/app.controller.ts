@@ -1,11 +1,10 @@
 import { All, Controller } from '@nestjs/common';
-import { AppService } from './app.service';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { STATUS_CODES, MESSAGES } from './core/constants';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor() {}
 
   @ApiResponse({ status: 200 })
   @All('/')

@@ -58,7 +58,7 @@ export class UserService extends LoggerBase {
       const user = await this.repo.findOne<User>({ where: { username } });
       if (user) {
         await this.cacheService.set(username, user, 100000);
-        this.logInfo(`user found: ${user.email}`, user.id);
+        this.logInfo(`user found: ${user.email}`, `id: ${user.id}`);
       } else {
         this.logWarn(`user with email:${username} is not found!`);
       }
