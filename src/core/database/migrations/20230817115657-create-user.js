@@ -2,27 +2,42 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Messages', {
+        await queryInterface.createTable('users', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            userId: {
+            id: {
                 type: Sequelize.UUID
             },
-            content: {
+            guildId: {
+                type: Sequelize.BIGINT
+            },
+            username: {
                 type: Sequelize.STRING
             },
-            createdAt: {
-                type: Sequelize.DATE
-            },
-            updatedAt: {
-                type: Sequelize.DATE
-            },
-            guildID: {
+            fullName: {
                 type: Sequelize.STRING
+            },
+            dateOfBirth: {
+                type: Sequelize.DATE
+            },
+            email: {
+                type: Sequelize.STRING
+            },
+            password: {
+                type: Sequelize.STRING
+            },
+            role: {
+                type: Sequelize.STRING
+            },
+            status: {
+                type: Sequelize.STRING
+            },
+            isBot: {
+                type: Sequelize.BOOLEAN
             },
             createdAt: {
                 allowNull: false,
@@ -35,6 +50,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Messages');
+        await queryInterface.dropTable('Users');
     }
 };

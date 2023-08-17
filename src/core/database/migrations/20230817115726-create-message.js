@@ -2,36 +2,30 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Guilds', {
+        await queryInterface.createTable('messages', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            name: {
-                type: Sequelize.STRING
-            },
-            description: {
-                type: Sequelize.STRING
-            },
-            ownerId: {
+            userId: {
                 type: Sequelize.UUID
             },
-            memberCount: {
-                type: Sequelize.INTEGER
-            },
-            icon: {
+            text: {
                 type: Sequelize.STRING
             },
-            roles: {
-                type: Sequelize.ARRAY(Sequelize.STRING)
-            },
-            region: {
+            file: {
                 type: Sequelize.STRING
             },
-            nsfwLevel: {
-                type: Sequelize.INTEGER
+            createdAt: {
+                type: Sequelize.DATE
+            },
+            updatedAt: {
+                type: Sequelize.DATE
+            },
+            guildID: {
+                type: Sequelize.STRING
             },
             createdAt: {
                 allowNull: false,
@@ -44,6 +38,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('Guilds');
+        await queryInterface.dropTable('Messages');
     }
 };
