@@ -1,8 +1,11 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateMessageDto {
   @IsNotEmpty()
-  readonly content: string;
+  readonly text: string;
+
+  @IsString()
+  readonly file: string;
 
   @IsNotEmpty()
   readonly guildID: string;

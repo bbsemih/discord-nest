@@ -12,7 +12,7 @@ export class MessageController {
 
   @Post()
   async createMessage(@Body() createMessageDto: CreateMessageDto): Promise<Message> {
-    return this.messageService.create(createMessageDto.content);
+    return this.messageService.create(createMessageDto.text);
   }
 
   @Get(':id')

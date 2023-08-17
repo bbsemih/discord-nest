@@ -5,6 +5,7 @@ import { MESSAGE_REPOSITORY } from '../constants';
 import { Message } from './message.entity';
 import { Cache } from 'cache-manager';
 import { LoggerService } from 'src/core/logger/logger.service';
+import { UploadService } from '../upload/upload.service';
 import { LoggerBase } from 'src/core/logger/logger.base';
 import { basename } from 'path';
 
@@ -15,6 +16,7 @@ export class MessageService extends LoggerBase {
     @Inject(MESSAGE_REPOSITORY) private readonly repo: typeof Message,
     //@Inject(CACHE_MANAGER) private cacheService: Cache,
     protected readonly logger: LoggerService,
+    protected readonly s3: UploadService,
   ) {
     super(logger);
   }
@@ -27,7 +29,8 @@ export class MessageService extends LoggerBase {
     return basename(__filename);
   }
 
-  async create(content: string, userId?: string, guildID?: string): Promise<Message> {
+  //TODO: add file and cache
+  async create(text: string, file?: string, userId?: string, guildID?: string): Promise<Message> {
     try {
       const user = await this.userService.findOne(userId);
       if (!user) {
@@ -36,7 +39,7 @@ export class MessageService extends LoggerBase {
 
       const message = await this.repo.create({
         userId,
-        content,
+        text,
         guildID,
       });
 

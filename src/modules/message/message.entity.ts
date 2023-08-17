@@ -27,7 +27,13 @@ export class Message extends Model<Message> {
     type: DataType.STRING,
     allowNull: false,
   })
-  content: string;
+  text: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  file: string;
 
   @Column({
     type: DataType.DATE,

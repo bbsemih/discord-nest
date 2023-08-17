@@ -10,11 +10,9 @@ import { APP_PIPE } from '@nestjs/core';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { LoggerModule } from './core/logger/logger.module';
-import { WinstonModule } from 'nest-winston';
-import * as winston from 'winston';
 import { JwtModule } from '@nestjs/jwt';
-import { UploadController } from './modules/upload/upload.controller';
 import { UploadModule } from './modules/upload/upload.module';
+import { UploadController } from './modules/upload/upload.controller';
 import * as dotenv from 'dotenv';
 dotenv.config();
 // eslint-disable-next-line
