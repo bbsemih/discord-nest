@@ -8,7 +8,7 @@
 > * TypeScript
 > * Docker
 > * Redis (TODO)
-> * File Uploading to AWS S3 (TODO)
+> * File Uploading to AWS S3
 > * Prometheus (TODO)
 > * BullMQ (TODO)
 
