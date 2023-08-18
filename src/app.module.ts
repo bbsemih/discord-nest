@@ -14,16 +14,29 @@ import { JwtModule } from '@nestjs/jwt';
 import { UploadModule } from './modules/upload/upload.module';
 import { UploadController } from './modules/upload/upload.controller';
 import * as dotenv from 'dotenv';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard } from '@nestjs/throttler';
+
 dotenv.config();
 // eslint-disable-next-line
 const cookieSession = require('cookie-session');
 
 @Module({
   imports: [
+    //TODO: implement prometheus
+    PrometheusModule.register(),
+    //forRootasync with config service doesnt work why???
+    ThrottlerModule.forRoot({
+      ttl: parseInt(process.env.RATE_TTL, 10),
+      limit: parseInt(process.env.RATE_LIMIT, 10),
+    }),
     JwtModule.register({
       secret: process.env.TOKEN_SECRET,
     }),
     ConfigModule.forRoot({ isGlobal: true }),
+    //move this to its own module
     CacheModule.register({
       isGlobal: true,
       store: typeof redisStore,
@@ -48,6 +61,7 @@ const cookieSession = require('cookie-session');
         whitelist: true,
       }),
     },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {

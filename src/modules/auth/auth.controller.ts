@@ -5,8 +5,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { signupUserDTO } from './dto/signup-user.dto';
 import { DoesUserExist } from 'src/core/guards/doesUserExist.guard';
 import { UserDto } from '../user/dto/user.dto';
+import { Throttle } from '@nestjs/throttler';
 
-//session here???
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -26,6 +26,7 @@ export class AuthController {
     return await this.authService.login(req.user);
   }
 
+  @Throttle(5, 60)
   @UseGuards(DoesUserExist)
   @Post('signup')
   async signUp(@Body() user: signupUserDTO): Promise<{ user: UserDto; token: string }> {

@@ -5,12 +5,15 @@ import { Guild } from './guild.entity';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from '../user/user.entity';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('guild')
 @ApiTags('guild')
 export class GuildController {
   constructor(private readonly guildService: GuildService) {}
 
+  @Throttle(5, 60)
   @Post()
   createGuild(@Body() createGuildDTO: CreateGuildDTO): Promise<Guild> {
     return this.guildService.create(createGuildDTO);
@@ -35,11 +38,13 @@ export class GuildController {
     return this.guildService.findAll(ownerId);
   }
 
+  @Throttle(5, 60)
   @Delete('/:id')
   removeGuild(@Param('id') id: string) {
     return this.guildService.remove(id);
   }
 
+  @Throttle(5, 60)
   @Patch('/:id')
   updateGuild(@Param('id') id: string, @Body() body: Partial<Guild>): Promise<Guild> {
     return this.guildService.update(id, body);

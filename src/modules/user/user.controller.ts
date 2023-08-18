@@ -1,11 +1,13 @@
-import { Controller, Get, UseInterceptors, Param, Delete, Patch, Body } from '@nestjs/common';
+import { Controller, Get, UseInterceptors, Param, Delete, Patch, Body, flatten } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { ApiTags } from '@nestjs/swagger';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @ApiTags('user')
 @Controller('user')
 export class UserController {
@@ -18,16 +20,19 @@ export class UserController {
 
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
+  @Throttle(8, 60) //overriding global throttle. 10 requets per second
   @Get('/:username')
   async findOne(@Param('username') username: string) {
     return this.userService.findOne(username);
   }
 
+  @Throttle(10, 60)
   @Delete('/:username')
   removeUser(@Param('username') username: string) {
     return this.userService.remove(username);
   }
 
+  @Throttle(3, 60)
   @Patch('/:username')
   updateUser(@Param('username') username: string, @Body() body: UpdateUserDto) {
     return this.userService.update(username, body);
