@@ -32,10 +32,10 @@ export class GuildService extends LoggerBase {
   async create(guild: CreateGuildDTO): Promise<Guild> {
     try {
       const newGuild = await this.repo.create<Guild>(guild);
-      this.logInfo('Guild created:', newGuild.id);
+      //this.logInfo('Guild created:', newGuild.id);
       return newGuild;
     } catch (error) {
-      this.logError('Error creating guild:', error);
+      this.logError('Error creating guild:', 'POST', error);
       throw error;
     }
   }
@@ -55,7 +55,7 @@ export class GuildService extends LoggerBase {
       this.logInfo(`Found ${guilds.length} guild(s) with ownerId: ${ownerId}`, ownerId);
       return guilds;
     } catch (error) {
-      this.logError('Error finding guilds:', error);
+      this.logError('Error finding guilds:', 'GET', error);
       throw error;
     }
   }
@@ -72,7 +72,7 @@ export class GuildService extends LoggerBase {
 
       return guild.members;
     } catch (error) {
-      this.logError('Error finding users in guild:', error);
+      this.logError('Error finding users in guild:', 'GET', error);
       throw error;
     }
   }
@@ -86,9 +86,9 @@ export class GuildService extends LoggerBase {
 
     try {
       await guild.destroy();
-      this.logInfo('Guild deleted:', guild.id);
+      this.logInfo('Guild deleted:', 'DELETE', guild.id);
     } catch (error) {
-      this.logError('Error deleting guild:', error);
+      this.logError('Error deleting guild:', 'DELETE', error);
       throw error;
     }
   }
@@ -102,10 +102,10 @@ export class GuildService extends LoggerBase {
     Object.assign(guild, attrs);
     try {
       const updatedGuild = await guild.save();
-      this.logInfo('Guild updated:', updatedGuild.id);
+      this.logInfo('Guild updated:', 'PATCH', updatedGuild.id);
       return updatedGuild;
     } catch (err) {
-      this.logError('Error updating guild:', err);
+      this.logError('Error updating guild:', 'PATCH', err);
       throw err;
     }
   }

@@ -46,7 +46,7 @@ export class MessageService extends LoggerBase {
       this.logInfo('Message created by user:', user.id);
       return message;
     } catch (error) {
-      this.logError('Error creating message:', error);
+      this.logError('Error creating message:', 'POST', error);
       throw error;
     }
   }
@@ -56,7 +56,7 @@ export class MessageService extends LoggerBase {
       where: { id, guildID: guildId },
     });
     if (!message) {
-      this.logWarn('Message not found:', id);
+      this.logWarn('Message not found:', 'GET', id);
       throw new NotFoundException('message not found');
     }
     return message;
@@ -82,9 +82,9 @@ export class MessageService extends LoggerBase {
 
     try {
       await message.destroy();
-      this.logInfo('Message deleted:', message.id); //check here
+      //this.logInfo('Message deleted:', message.id); //check here
     } catch (error) {
-      this.logError('Error deleting message:', error);
+      this.logError('Error deleting message:', 'DELETE', error);
       throw error;
     }
   }
@@ -101,7 +101,7 @@ export class MessageService extends LoggerBase {
       //this.logInfo('Message updated:', updatedMessage.id);
       return updatedMessage;
     } catch (err) {
-      this.logError('Error updating message:', err);
+      this.logError('Error updating message:', 'UPDATE', err);
       throw err;
     }
   }

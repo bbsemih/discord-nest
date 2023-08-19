@@ -11,6 +11,7 @@ export const databaseConfig: IDatabaseConfig = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
+    logging: false,
   },
   test: {
     username: process.env.DB_USER,
@@ -19,6 +20,7 @@ export const databaseConfig: IDatabaseConfig = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
+    logging: false,
   },
   production: {
     username: process.env.DB_USER,
@@ -27,6 +29,7 @@ export const databaseConfig: IDatabaseConfig = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialect: process.env.DB_DIALECT,
+    logging: false,
   },
   aws: {
     username: process.env.AWS_DB_USER,
@@ -35,5 +38,6 @@ export const databaseConfig: IDatabaseConfig = {
     host: process.env.AWS_DB_HOST,
     port: process.env.AWS_DB_PORT,
     dialect: process.env.AWS_DB_DIALECT,
+    logging: true,
   },
 };

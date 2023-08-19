@@ -55,7 +55,7 @@ export class AuthService extends LoggerBase {
       const token = await this.generateToken(newUser);
       return { user: newUser, token };
     } catch (error) {
-      this.logError('Error creating user:', error);
+      this.logError('Error creating user:', 'POST', error);
       throw error;
     }
   }
