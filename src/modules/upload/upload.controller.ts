@@ -1,6 +1,7 @@
 import { Controller, ParseFilePipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
+import { FileValidationPipe } from './pipes/file-validator.pipe';
 
 @Controller('upload')
 export class UploadController {
@@ -8,19 +9,8 @@ export class UploadController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFileToPrivate(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          //todo: import custom validation pipe
-          //new MaxFileSizeValidator({maxSize: 1000}),
-          //new FileTypeValidator({ fileType: 'image/jpeg' }),
-        ],
-      }),
-    )
-    file: Express.Multer.File,
-  ) {
-    await this.uploadService.upload(file.originalname, file.buffer);
+  async uploadFileToPrivate(@UploadedFile(FileValidationPipe) file: Express.Multer.File) {
+    await this.uploadService.uploadOne(file.originalname, file.buffer);
   }
 
   //TODO: implement streaming
