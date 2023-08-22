@@ -2,12 +2,12 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './user.entity';
 import { USER_REPOSITORY } from '../constants';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { LoggerService } from 'src/core/logger/logger.service';
+import { LoggerService } from '../../core/logger/logger.service';
 import { Cache } from 'cache-manager';
 import { UserDto } from './dto/user.dto';
-import { LoggerBase } from 'src/core/logger/logger.base';
+import { LoggerBase } from '../../core/logger/logger.base';
 import { basename } from 'path';
-import { HttpMethod } from 'src/decorators/http-method.decorator';
+import { HttpMethod } from '../../decorators/http-method.decorator';
 
 @Injectable()
 export class UserService extends LoggerBase {

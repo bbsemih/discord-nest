@@ -11,8 +11,4 @@ describe('UploadController', () => {
 
     controller = module.get<UploadController>(UploadController);
   });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
 });

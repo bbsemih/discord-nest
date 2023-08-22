@@ -1,4 +1,4 @@
-import { Controller, ParseFilePipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import { FileValidationPipe } from './pipes/file-validator.pipe';
@@ -9,7 +9,7 @@ export class UploadController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFileToPrivate(@UploadedFile(FileValidationPipe) file: Express.Multer.File) {
+  async uploadFile(@UploadedFile(FileValidationPipe) file: Express.Multer.File) {
     await this.uploadService.uploadOne(file.originalname, file.buffer);
   }
 

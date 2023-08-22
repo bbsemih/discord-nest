@@ -46,7 +46,3 @@ services:
       - 14268:14268
       - 14269:14269
       - 9411:9411
-
-volumes:
-  docker-nest-postgres:
-  redis:

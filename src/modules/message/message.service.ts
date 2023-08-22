@@ -1,9 +1,7 @@
 import { UserService } from './../user/user.service';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { MESSAGE_REPOSITORY } from '../constants';
 import { Message } from './message.entity';
-import { Cache } from 'cache-manager';
 import { LoggerService } from 'src/core/logger/logger.service';
 import { UploadService } from '../upload/upload.service';
 import { LoggerBase } from 'src/core/logger/logger.base';

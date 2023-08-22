@@ -12,7 +12,12 @@ describe('MessageService', () => {
     service = module.get<MessageService>(MessageService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('find a message with its id', () => {
+    expect(service.findOne('1')).toEqual({
+      id: '1',
+      text: 'Hello World',
+      userId: '1',
+      guildID: '1',
+    });
   });
 });

@@ -5,7 +5,7 @@ import { Readable } from 'stream';
 
 @Injectable()
 export class UploadService {
-  private readonly s3ClientDc = new S3Client({
+  private s3ClientDc = new S3Client({
     region: this.configService.getOrThrow('AWS_S3_REGION'),
   });
 

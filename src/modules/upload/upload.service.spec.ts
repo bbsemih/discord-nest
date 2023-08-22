@@ -1,43 +1,48 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { UploadService } from './upload.service';
-import { ConfigService } from '@nestjs/config';
-import { ConfigModule } from '@nestjs/config';
-import { S3Client } from '@aws-sdk/client-s3';
 
 describe('UploadService', () => {
   let uploadService: UploadService;
-  let s3Client: S3Client;
 
-  beforeEach(async () => {
-    const sendMock = jest.fn();
-    const s3ClientMock = {
-      send: sendMock,
-    };
+  const mockConfigService = {
+    getOrThrow: jest.fn(key => {
+      if (key === 'AWS_S3_REGION') return 'mock-region';
+      if (key === 'AWS_S3_BUCKET_NAME') return 'mock-bucket';
+    }),
+  };
 
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UploadService, ConfigService],
-      imports: [ConfigModule.forRoot()],
-    })
-      .overrideProvider(S3Client)
-      .useValue(s3ClientMock)
-      .compile();
-
-    uploadService = module.get<UploadService>(UploadService);
-    s3Client = module.get<S3Client>(S3Client);
+  beforeEach(() => {
+    uploadService = new UploadService(mockConfigService as any);
   });
 
-  it('should upload a file using the S3 client', async () => {
-    const filename = 'testdeneme.jpg';
-    const filebuff = Buffer.from('test image data');
+  it('uploads a file', async () => {
+    const mockS3Client = {
+      send: jest.fn(),
+    };
 
-    await uploadService.upload(filename, filebuff);
+    uploadService['s3ClientDc'] = mockS3Client as any;
 
-    expect(s3Client.send).toHaveBeenCalledWith(
+    await uploadService.uploadOne('test-file.txt', Buffer.from('test-content'));
+
+    expect(mockS3Client.send).toHaveBeenCalledWith(
       expect.objectContaining({
-        Bucket: expect.any(String),
-        Key: filename,
-        Body: filebuff,
+        input: expect.objectContaining({
+          Bucket: 'mock-bucket',
+          Key: 'test-file.txt',
+          Body: Buffer.from('test-content'),
+        }),
       }),
     );
+  });
+
+  it('should get a file stream', async () => {
+    const mockS3Client = {
+      send: jest.fn(() => ({
+        Body: Buffer.from('test-content'),
+      })),
+    };
+    uploadService['s3ClientDc'] = mockS3Client as any;
+    const fileStream = await uploadService.getFileStream('test-file.txt');
+
+    expect(fileStream).toEqual(Buffer.from('test-content'));
   });
 });

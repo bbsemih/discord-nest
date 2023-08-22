@@ -4,9 +4,8 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { signupUserDTO } from './dto/signup-user.dto';
 import { loginUserDTO } from './dto/login-user.dto';
-import { UserDto } from '../user/dto/user.dto';
-import { LoggerService } from 'src/core/logger/logger.service';
-import { LoggerBase } from 'src/core/logger/logger.base';
+import { LoggerService } from '../../core/logger/logger.service';
+import { LoggerBase } from '../../core/logger/logger.base';
 import { basename } from 'path';
 
 @Injectable()
@@ -39,17 +38,16 @@ export class AuthService extends LoggerBase {
     return { user, token };
   }
 
-  public async signUp(user: signupUserDTO): Promise<{ user: UserDto; token: string }> {
+  public async signUp(user: signupUserDTO) {
     try {
       const userExists = await this.userService.findOne(user.username);
       if (userExists) {
-        throw new Error('User already exists');
+        throw new Error('Username is already in use!');
       }
 
       const hashedPassword = await this.hashPassword(user.password);
       const newUserWithoutId = { ...user, password: hashedPassword };
       const newUser = await this.userService.create(newUserWithoutId);
-
       this.logInfo('User signed up', newUser.id);
 
       const token = await this.generateToken(newUser);
