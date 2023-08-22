@@ -6,7 +6,6 @@ import { User } from '../user/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { LoggerService } from '../../core/logger/logger.service';
 import { BadRequestException } from '@nestjs/common';
-import { async, skip } from 'rxjs';
 
 describe('AuthService', () => {
   let service: AuthService;
