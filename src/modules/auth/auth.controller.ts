@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { signupUserDTO } from './dto/signup-user.dto';
-import { DoesUserExist } from 'src/core/guards/doesUserExist.guard';
+import { DoesUserExist } from '../../core/guards/doesUserExist.guard';
 import { UserDto } from '../user/dto/user.dto';
 import { Throttle } from '@nestjs/throttler';
 

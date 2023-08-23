@@ -38,17 +38,6 @@ export class UserService extends LoggerBase {
     }
   }
 
-  async findAll(email: string) {
-    try {
-      const users = await this.repo.findAll<User>({ where: { email } });
-      this.logInfo(`Found ${users.length} user(s) with email: ${email}`, 'GET');
-      return users;
-    } catch (err) {
-      this.logError(`Error finding users: ${err.message}`, 'GET', err);
-      throw err;
-    }
-  }
-
   async findOne(username: string, @HttpMethod() httpMethod?: string) {
     const cachedUser = await this.cacheService.get<User>(username);
     if (cachedUser) {
