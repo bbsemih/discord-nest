@@ -5,7 +5,7 @@ export class CreateMessageDto {
   readonly text: string;
 
   @IsString()
-  readonly file: string;
+  readonly s3Url: string;
 
   @IsNotEmpty()
   readonly guildID: string;

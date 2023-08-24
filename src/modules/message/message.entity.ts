@@ -32,8 +32,9 @@ export class Message extends Model<Message> {
   @Column({
     type: DataType.STRING,
     allowNull: true,
+    field: 's3_url',
   })
-  file: string;
+  s3Url: string;
 
   @Column({
     type: DataType.DATE,

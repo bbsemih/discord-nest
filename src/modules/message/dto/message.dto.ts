@@ -18,7 +18,7 @@ export class MessageDTO {
   readonly text: string;
 
   @IsString()
-  readonly file: string;
+  readonly s3Url: string;
 
   @IsNotEmpty()
   readonly createdAt: Date;
