@@ -2,17 +2,19 @@ import { UserService } from './../user/user.service';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { MESSAGE_REPOSITORY } from '../constants';
 import { Message } from './message.entity';
-import { LoggerService } from 'src/core/logger/logger.service';
+import { LoggerService } from '../../core/logger/logger.service';
 import { UploadService } from '../upload/upload.service';
-import { LoggerBase } from 'src/core/logger/logger.base';
+import { LoggerBase } from '../../core/logger/logger.base';
 import { basename } from 'path';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class MessageService extends LoggerBase {
   constructor(
     private readonly userService: UserService,
     @Inject(MESSAGE_REPOSITORY) private readonly repo: typeof Message,
-    //@Inject(CACHE_MANAGER) private cacheService: Cache,
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
     protected readonly logger: LoggerService,
     protected readonly s3: UploadService,
   ) {
@@ -28,6 +30,7 @@ export class MessageService extends LoggerBase {
   }
 
   //TODO: add file and cache
+  //find the userid from session, token or something
   async create(text: string, file?: string, userId?: string, guildID?: string): Promise<Message> {
     try {
       const user = await this.userService.findOne(userId);
@@ -44,7 +47,7 @@ export class MessageService extends LoggerBase {
       this.logInfo('Message created by user:', user.id);
       return message;
     } catch (error) {
-      this.logError('Error creating message:', 'POST', error);
+      this.logError('Error creating message:', error);
       throw error;
     }
   }
@@ -54,7 +57,7 @@ export class MessageService extends LoggerBase {
       where: { id, guildID: guildId },
     });
     if (!message) {
-      this.logWarn('Message not found:', 'GET', id);
+      this.logWarn('Message not found:', id);
       throw new NotFoundException('message not found');
     }
     return message;
@@ -80,9 +83,9 @@ export class MessageService extends LoggerBase {
 
     try {
       await message.destroy();
-      //this.logInfo('Message deleted:', message.id); //check here
+      this.logInfo('Message deleted:', message.id);
     } catch (error) {
-      this.logError('Error deleting message:', 'DELETE', error);
+      this.logError('Error deleting message:', error);
       throw error;
     }
   }
@@ -96,10 +99,10 @@ export class MessageService extends LoggerBase {
     Object.assign(message, attrs);
     try {
       const updatedMessage = await message.save();
-      //this.logInfo('Message updated:', updatedMessage.id);
+      this.logInfo('Message updated:', updatedMessage.id);
       return updatedMessage;
     } catch (err) {
-      this.logError('Error updating message:', 'UPDATE', err);
+      this.logError('Error updating message:', err);
       throw err;
     }
   }

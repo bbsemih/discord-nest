@@ -7,8 +7,8 @@ import { guildProviders } from './guild.providers';
 
 @Module({
   imports: [LoggerModule, UserModule],
-  controllers: [GuildController],
   providers: [GuildService, ...guildProviders],
   exports: [GuildService],
+  controllers: [GuildController],
 })
 export class GuildModule {}

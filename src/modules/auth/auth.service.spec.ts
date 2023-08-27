@@ -5,7 +5,7 @@ import { UserDto } from '../user/dto/user.dto';
 import { User } from '../user/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { LoggerService } from '../../core/logger/logger.service';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let service: AuthService;

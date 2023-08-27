@@ -18,9 +18,6 @@ export class GuildDTO {
   @Expose()
   readonly ownerId: string;
 
-  @Expose()
-  readonly owner: UserDto;
-
   @IsArray()
   @Expose()
   readonly members: UserDto[];

@@ -35,7 +35,7 @@ export class GuildController {
   findAllGuilds(): Promise<Guild[]> {
     // might need to get ownerId from the authenticated user
     const ownerId = 'user_id_here'; // Replace with the actual ownerId
-    return this.guildService.findAll(ownerId);
+    return this.guildService.findGuildsOfUser(ownerId);
   }
 
   @Throttle(5, 60)

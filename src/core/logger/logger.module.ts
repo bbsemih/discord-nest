@@ -14,11 +14,11 @@ import * as winston from 'winston';
               winston.format.colorize(),
               winston.format.simple(),
               winston.format.printf(msg => {
-                const { level, timestamp, message, context, methodName } = msg;
+                const { level, timestamp, message, context } = msg;
                 const { class: className, filename, type } = context;
                 const formattedTimestamp = new Date(timestamp).toISOString().replace('T', ' ').slice(0, -5);
 
-                return `[${level}] [${methodName}] | ${formattedTimestamp} | ${message} | class: ${className} | filename: ${filename} | type: ${type}`;
+                return `[${level}] | ${formattedTimestamp} | ${message} | class: ${className} | filename: ${filename} | type: ${type}`;
               }),
             ),
           }),

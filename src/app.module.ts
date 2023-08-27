@@ -12,7 +12,6 @@ import * as redisStore from 'cache-manager-redis-store';
 import { LoggerModule } from './core/logger/logger.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UploadModule } from './modules/upload/upload.module';
-import { UploadController } from './modules/upload/upload.controller';
 import * as dotenv from 'dotenv';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -27,7 +26,6 @@ const cookieSession = require('cookie-session');
   imports: [
     //TODO: implement prometheus
     PrometheusModule.register(),
-    //forRootasync with config service doesnt work why???
     ThrottlerModule.forRoot({
       ttl: parseInt(process.env.RATE_TTL, 10),
       limit: parseInt(process.env.RATE_LIMIT, 10),
@@ -53,7 +51,7 @@ const cookieSession = require('cookie-session');
     LoggerModule,
     UploadModule,
   ],
-  controllers: [AppController, UploadController],
+  controllers: [AppController],
   providers: [
     {
       provide: APP_PIPE,

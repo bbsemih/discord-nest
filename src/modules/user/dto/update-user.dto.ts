@@ -1,4 +1,4 @@
-import { IsOptional, IsEmail, MinLength, IsString, IsDate, IsBoolean } from 'class-validator';
+import { IsOptional, IsEmail, MinLength, IsDate } from 'class-validator';
 import { Expose } from 'class-transformer';
 
 export class UpdateUserDto {

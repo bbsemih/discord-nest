@@ -30,9 +30,6 @@ export class Guild extends Model<Guild> {
   })
   ownerId!: string;
 
-  @BelongsTo(() => User)
-  owner: User;
-
   @HasMany(() => User, 'guildId')
   members!: User[];
 

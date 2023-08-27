@@ -6,9 +6,8 @@ import { Logger } from '@nestjs/common';
 export class LoggerService implements LoggerF {
   constructor(@Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: Logger) {}
 
-  info(msg: string, className: string, methodName: string, level: LogLevelEnum, filename: string, type: LogTypeEnum): void {
+  info(msg: string, className: string, level: LogLevelEnum, filename: string, type: LogTypeEnum): void {
     this.logger.log(msg, {
-      methodName: methodName,
       type: type,
       filename: filename,
       level: level,
@@ -16,18 +15,16 @@ export class LoggerService implements LoggerF {
     });
   }
 
-  verbose(msg: string, className: string, methodName: string, level: LogLevelEnum.VERBOSE, type: LogTypeEnum): void {
+  verbose(msg: string, className: string, level: LogLevelEnum.VERBOSE, type: LogTypeEnum): void {
     this.logger.log(msg, {
-      methodName: methodName,
       type: type,
       level: level,
       class: className,
     });
   }
 
-  warn(msg: string, className: string, methodName: string, level: LogLevelEnum.WARN, filename: string, type: LogTypeEnum.SERVICE): void {
+  warn(msg: string, className: string, level: LogLevelEnum.WARN, filename: string, type: LogTypeEnum.SERVICE): void {
     this.logger.log(msg, {
-      methodName: methodName,
       type: type,
       level: level,
       class: className,
@@ -35,18 +32,16 @@ export class LoggerService implements LoggerF {
     });
   }
 
-  debug(msg: string, className: string, methodName: string, level: LogLevelEnum.DEBUG, type: LogTypeEnum.SERVICE): void {
+  debug(msg: string, className: string, level: LogLevelEnum.DEBUG, type: LogTypeEnum.SERVICE): void {
     this.logger.log(msg, {
-      methodName: methodName,
       type: type,
       level: level,
       class: className,
     });
   }
 
-  error(msg: string, className: string, methodName: string, level: LogLevelEnum.ERROR, filename: string, type: LogTypeEnum.SERVICE): void {
+  error(msg: string, className: string, level: LogLevelEnum.ERROR, filename: string, type: LogTypeEnum.SERVICE): void {
     this.logger.log(msg, {
-      methodName: methodName,
       type: type,
       level: level,
       class: className,
