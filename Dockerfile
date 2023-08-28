@@ -29,7 +29,7 @@ RUN npm run build
 ENV NODE_ENV=production
 
 #installing only production dependencies and cleaning the cache to reduce image size
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --only=production --ignore-scripts && npm cache clean --force
 
 USER node
 

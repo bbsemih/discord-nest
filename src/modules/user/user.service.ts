@@ -29,7 +29,7 @@ export class UserService extends LoggerBase {
   async create(user: UserDto): Promise<User> {
     try {
       const newUser = await this.repo.create<User>(user);
-      //this.logInfo('User created:', newUser.id);
+      this.logInfo('User created:', newUser.id);
       return newUser;
     } catch (err) {
       this.logError('Error creating user:', err);
@@ -41,14 +41,14 @@ export class UserService extends LoggerBase {
   async findOne(username: string) {
     const cachedUser = await this.cacheService.get<User>(username);
     if (cachedUser) {
-      //this.logInfo(`user found in cache: ${cachedUser.email}`, cachedUser.id);
+      this.logInfo(`user found in cache: ${cachedUser.email}`, cachedUser.id);
       return cachedUser;
     }
     try {
       const user = await this.repo.findOne<User>({ where: { username } });
       if (user) {
         await this.cacheService.set(username, user, 100000);
-        //this.logInfo(`user found: ${user.email}`, `id: ${user.id}`);
+        this.logInfo(`user found: ${user.email}`, `id: ${user.id}`);
       } else {
         this.logWarn(`user with email:${username} is not found!`, user.id);
       }
@@ -63,7 +63,7 @@ export class UserService extends LoggerBase {
   async findAll() {
     try {
       const users = await this.repo.findAll<User>();
-      //this.logInfo(`number of users found: ${users.length}`);
+      this.logInfo(`number of users found: ${users.length}`);
       return users;
     } catch (err) {
       this.logError(`Error finding users: ${err.message}`, err);
@@ -74,7 +74,7 @@ export class UserService extends LoggerBase {
   async update(id: string, attrs: Partial<User>) {
     const user = await this.repo.findByPk<User>(id);
     if (!user) {
-      //this.logWarn(`user with id:${id} is not found!`, id);
+      this.logWarn(`user with id:${id} is not found!`, id);
       throw new NotFoundException('user not found');
     }
     Object.assign(user, attrs);

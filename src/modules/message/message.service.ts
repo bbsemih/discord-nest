@@ -44,10 +44,10 @@ export class MessageService extends LoggerBase {
         guildID,
       });
 
-      this.logInfo('Message created by user:', user.id);
+      //this.logInfo('Message created by user:', user.id);
       return message;
     } catch (error) {
-      this.logError('Error creating message:', error);
+      //this.logError('Error creating message:', error);
       throw error;
     }
   }

@@ -34,7 +34,6 @@ const cookieSession = require('cookie-session');
       secret: process.env.TOKEN_SECRET,
     }),
     ConfigModule.forRoot({ isGlobal: true }),
-    //move this to its own module
     CacheModule.register({
       isGlobal: true,
       store: typeof redisStore,
