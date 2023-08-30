@@ -57,7 +57,7 @@ describe('UserService', () => {
   });
 
   describe('create', () => {
-    it('should create  a new user', async () => {
+    it('create  a new user', async () => {
       const mockUserDto = {} as UserDto;
       const mockCreatedUser = {} as User;
       mockUserRepo.create.mockResolvedValue(mockCreatedUser);
@@ -68,7 +68,7 @@ describe('UserService', () => {
       expect(mockUserRepo.create).toHaveBeenCalledWith(mockUserDto);
     });
 
-    it('should throw an error when creating a user fails', async () => {
+    it('throw an error when creating a user fails in service', async () => {
       const mockUserDto = {} as UserDto;
       const mockError = new Error('Mock error');
       mockUserRepo.create.mockRejectedValue(mockError);
@@ -78,7 +78,7 @@ describe('UserService', () => {
   });
 
   describe('findOne', () => {
-    it('should find a user by username from cache', async () => {
+    it('find a user by username from cache', async () => {
       const mockUsername = 'testuser';
       const mockCachedUser = jest.mocked<User>;
 
@@ -89,11 +89,11 @@ describe('UserService', () => {
       expect(cacheService.get).toHaveBeenCalledWith(mockUsername);
     });
 
-    it('should find a user by username from database', async () => {
+    it('find a user by username from database', async () => {
       const mockUsername = 'semihb';
       const mockUser = jest.mocked<User>;
 
-      mockCacheManager.get.mockResolvedValue(null); //no cache hit
+      mockCacheManager.get.mockResolvedValue(null); //should be no cache hit
       mockUserRepo.findOne.mockResolvedValue(mockUser);
 
       const res = await service.findOne(mockUsername);
@@ -107,7 +107,7 @@ describe('UserService', () => {
   });
 
   describe('findAll', () => {
-    it('should find all users', async () => {
+    it('find all users', async () => {
       const user1 = jest.fn() as unknown as User;
       const user2 = jest.fn() as unknown as User;
 
@@ -121,40 +121,40 @@ describe('UserService', () => {
     });
   });
 
-  //doesnt work properly
   describe.skip('update', () => {
-    it('should update the user with given id and attributes', async () => {
-      const mockUserId = '1';
-      const mockAttrs = { email: 'test@gmail.com', password: 'testpass' };
-
-      const mockUserInstance = {
-        ...mockAttrs,
-        save: jest.fn(),
+    it('update the user with given id and attributes', async () => {
+      const [id, attr] = ['1', { username: 'deneme', email: 'test@hotmail.com' }];
+      const mockUser: Partial<User> = {
+        id: '1',
+        username: 'testuser',
+        email: 'test@gmail.com',
       };
-      const res = await service.update(mockUserId, mockAttrs);
+      const mockUserInstance: Partial<User> = {
+        id: '1',
+        username: 'testuser',
+        email: 'test@gmail.com',
+        save: jest.fn().mockResolvedValue(mockUser as User),
+      };
 
-      expect(res).toBe(mockUserInstance);
-      expect(mockUserRepo.findByPk).toHaveBeenCalledWith(mockUserId);
+      mockUserRepo.findOne.mockResolvedValue(mockUser as User);
+      const updatedUser = await service.update(id, attr);
+
+      expect(updatedUser).toEqual(mockUser);
+      expect(mockUserRepo.findOne).toHaveBeenCalledWith({ where: { id } });
+      expect(updatedUser.id).toBe(id);
+      expect(updatedUser.username).toBe(attr.username);
+      expect(updatedUser.email).toBe(attr.email);
     });
   });
 
   describe.skip('remove', () => {
-    it('should remove the user from database', async () => {
-      /*
+    it('remove the user from database by username', async () => {
       const mockUsername = 'testuser';
-      const mockUser = jest.mocked<User>();
+      const mockUser = jest.mocked<User>;
 
-      mockUserRepo.findOne.mockResolvedValue(mockUser);
-      mockUser.destroy.mockResolvedValue(true);
 
-      const res = await service.remove(mockUsername);
 
-      expect(res).toBe(true);
-      expect(mockUserRepo.findOne).toHaveBeenCalledWith({
-        where: { username: mockUsername },
-      });
-      expect(mockUser.destroy).toHaveBeenCalled();
-      */
+      await service.remove(mockUsername);
     });
   });
 });

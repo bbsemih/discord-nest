@@ -7,12 +7,16 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { LoggerService } from '../../core/logger/logger.service';
 import { UploadService } from '../upload/upload.service';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { instance, mock } from 'ts-mockito';
+import { Message } from './message.entity';
+import { Cache } from 'cache-manager';
 
 describe('MessageService', () => {
   let service: MessageService;
   let mockUserService: Partial<UserService>;
   let cacheService: Cache;
-  let uploadService: UploadService;
+  let mockUploadService: UploadService;
+  let mockLoggerService: LoggerService;
 
   const mockMessageRepo = {
     create: jest.fn(),
@@ -36,6 +40,7 @@ describe('MessageService', () => {
   };
 
   beforeEach(async () => {
+    mockLoggerService = mock(LoggerService);
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MessageService,
@@ -49,23 +54,21 @@ describe('MessageService', () => {
           useValue: mockUserRepo,
         },
         {
-          provide: CACHE_MANAGER,
-          useValue: mockCacheManager,
-        },
-        {
           provide: UserService,
           useValue: mockUserService,
         },
         {
           provide: LoggerService,
-          //TODO: mock logger service
-          useValue: {},
+          useValue: instance(mockLoggerService) ,
         },
         {
           provide: UploadService,
-          //TODO: mock upload service
-          useValue: {},
+          useValue: mockUploadService,
         },
+        {
+          provide: CACHE_MANAGER,
+          useValue: mockCacheManager,
+        }
       ],
     }).compile();
 
@@ -78,7 +81,7 @@ describe('MessageService', () => {
   });
 
   describe('create', () => {
-    it('should create a message', async () => {
+    it('should create a message with given attributes', async () => {
       const mockMessage = {
         id: '1',
         text: 'mock message',
@@ -105,9 +108,39 @@ describe('MessageService', () => {
     });
   });
 
-  describe('findOne', () => {});
+  describe('findOne', () => {
+    it('should find a message with given id from database', async () => {
+      const mockId = '1';
+      const mockMessage = jest.mocked<Message>;
 
-  describe('findAll', () => {});
+      mockCacheManager.get.mockResolvedValue(null);// should be no cache hit
+      mockMessageRepo.findOne.mockResolvedValue(mockMessage);
+
+      const res = await service.findOne(mockId);
+      expect(res).toBe(mockMessage);
+      expect(cacheService.get).toHaveBeenCalledWith(mockId);
+      expect(mockMessageRepo.findOne).toHaveBeenCalledWith({
+        where: { id: mockId },
+      })
+    });
+
+    it('should find a message with given id from cache', async() => {
+      const mockId = '1';
+      const mockMessage = jest.mocked<Message>;
+      
+      mockCacheManager.get.mockResolvedValue(mockMessage);
+      const result = await service.findOne(mockId);
+
+      expect(result).toBe(mockMessage);
+      expect(cacheService.get).toHaveBeenCalledWith(mockId);
+      expect(mockCacheManager.get).toHaveBeenCalledWith(mockId);
+      expect(mockMessageRepo.findOne).not.toHaveBeenCalledWith(mockId);
+    });
+  });
+
+  describe('findAll', () => {
+
+  });
 
   describe('remove', () => {});
 

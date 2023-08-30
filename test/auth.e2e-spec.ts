@@ -15,7 +15,6 @@ describe('Authentication Module (e2e)', () => {
     await app.init();
   });
 
-  //TODO: Add more tests
   it('handles a signup request', () => {
     const email = 'semih.im@gmail.com';
     return request(app.getHttpServer())

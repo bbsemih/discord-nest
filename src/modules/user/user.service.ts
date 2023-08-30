@@ -72,7 +72,7 @@ export class UserService extends LoggerBase {
   }
 
   async update(id: string, attrs: Partial<User>) {
-    const user = await this.repo.findByPk<User>(id);
+    const user = await this.repo.findOne<User>({ where: { id } });
     if (!user) {
       this.logWarn(`user with id:${id} is not found!`, id);
       throw new NotFoundException('user not found');

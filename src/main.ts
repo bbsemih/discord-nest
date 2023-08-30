@@ -9,6 +9,20 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+  app.use(require('express-status-monitor')({
+    title: 'discord-nest',
+    path: '/v1/monitor/status',
+    chartVisibility: {
+      cpu: true,
+      mem: true,
+      load: true,
+      heap: true,
+      eventLoop: true,
+      responseTime: true,
+      rps: true,
+      statusCodes: true,
+    },
+  }));
 
   app.enableVersioning({
     type: VersioningType.URI,
