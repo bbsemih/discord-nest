@@ -11,7 +11,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { LoggerModule } from './core/logger/logger.module';
 import { JwtModule } from '@nestjs/jwt';
-import { UploadModule } from './modules/upload/upload.module';
+import { S3Module } from './modules/s3/s3.module';
 import * as dotenv from 'dotenv';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -49,7 +49,7 @@ const cookieSession = require('cookie-session');
     DatabaseModule,
     MessageModule,
     LoggerModule,
-    UploadModule,
+    S3Module,
   ],
   controllers: [AppController],
   providers: [

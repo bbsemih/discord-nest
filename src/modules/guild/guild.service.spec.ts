@@ -9,7 +9,6 @@ import { Guild } from './guild.entity';
 import { mock, instance } from 'ts-mockito';
 import { User } from '../user/user.entity';
 
-
 describe('GuildService', () => {
   let service: GuildService;
   let mockLoggerService: LoggerService;
@@ -52,11 +51,11 @@ describe('GuildService', () => {
         {
           provide: GUILD_REPOSITORY,
           useValue: mockGuildRepo,
-        }, 
+        },
         {
           provide: CACHE_MANAGER,
           useValue: mockCacheManager,
-        }
+        },
       ],
     }).compile();
 
@@ -91,7 +90,7 @@ describe('GuildService', () => {
 
       const result = await service.findOne(mockGuildId);
 
-      expect(result).toBe(mockGuild)
+      expect(result).toBe(mockGuild);
       //uncomment this when cache is implemented
       //expect(cacheService.get).toHaveBeenCalledWith(mockGuildId);
       expect(mockGuildRepo.findOne).toHaveBeenCalledWith({ where: { id: mockGuildId } });
@@ -124,7 +123,7 @@ describe('GuildService', () => {
       expect(mockGuildRepo.findAll).toHaveBeenCalledWith({ where: { ownerId: mockUserId } });
     });
 
-    it('find all users in a specific guild', async() => {
+    it('find all users in a specific guild', async () => {
       const mockGuildId = '1';
       const mockGuild = jest.mocked<Guild>;
       const mockUsers = jest.mocked<User[]>;
@@ -135,7 +134,7 @@ describe('GuildService', () => {
 
       expect(result).toBe(mockUsers);
       expect(mockGuildRepo.findByPk).toHaveBeenCalledWith(mockGuildId, { include: [{ model: User, as: 'members' }] });
-    })
+    });
   });
 
   describe('remove', () => {

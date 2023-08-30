@@ -1,4 +1,4 @@
-import { Controller, Get, UseInterceptors, Param, Delete, Patch, Body, flatten } from '@nestjs/common';
+import { Controller, Get, UseInterceptors, Param, Delete, Patch, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';

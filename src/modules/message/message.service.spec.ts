@@ -5,7 +5,7 @@ import { messageProviders } from './message.providers';
 import { UserService } from '../user/user.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { LoggerService } from '../../core/logger/logger.service';
-import { UploadService } from '../upload/upload.service';
+import { UploadService } from '../s3/s3.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { instance, mock } from 'ts-mockito';
 import { Message } from './message.entity';
@@ -59,7 +59,7 @@ describe('MessageService', () => {
         },
         {
           provide: LoggerService,
-          useValue: instance(mockLoggerService) ,
+          useValue: instance(mockLoggerService),
         },
         {
           provide: UploadService,
@@ -68,7 +68,7 @@ describe('MessageService', () => {
         {
           provide: CACHE_MANAGER,
           useValue: mockCacheManager,
-        }
+        },
       ],
     }).compile();
 
@@ -113,7 +113,7 @@ describe('MessageService', () => {
       const mockId = '1';
       const mockMessage = jest.mocked<Message>;
 
-      mockCacheManager.get.mockResolvedValue(null);// should be no cache hit
+      mockCacheManager.get.mockResolvedValue(null); // should be no cache hit
       mockMessageRepo.findOne.mockResolvedValue(mockMessage);
 
       const res = await service.findOne(mockId);
@@ -121,13 +121,13 @@ describe('MessageService', () => {
       expect(cacheService.get).toHaveBeenCalledWith(mockId);
       expect(mockMessageRepo.findOne).toHaveBeenCalledWith({
         where: { id: mockId },
-      })
+      });
     });
 
-    it('should find a message with given id from cache', async() => {
+    it('should find a message with given id from cache', async () => {
       const mockId = '1';
       const mockMessage = jest.mocked<Message>;
-      
+
       mockCacheManager.get.mockResolvedValue(mockMessage);
       const result = await service.findOne(mockId);
 
@@ -138,9 +138,7 @@ describe('MessageService', () => {
     });
   });
 
-  describe('findAll', () => {
-
-  });
+  describe('findAll', () => {});
 
   describe('remove', () => {});
 

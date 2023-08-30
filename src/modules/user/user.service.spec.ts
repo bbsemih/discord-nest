@@ -131,7 +131,7 @@ describe('UserService', () => {
         username: 'semi',
         email: 'semi@gmail.com',
         save: jest.fn(),
-      }
+      };
 
       mockUserRepo.findOne.mockResolvedValue(mockUser);
       mockUser.save = jest.fn().mockResolvedValue(mockUser);
@@ -149,7 +149,7 @@ describe('UserService', () => {
       const userId = '404';
       const updatedAttributes = { username: 'UpdatedFirstName' };
       mockUserRepo.findOne.mockResolvedValue(null);
-  
+
       await expect(service.update(userId, updatedAttributes)).rejects.toThrowError(NotFoundException);
       expect(mockUserRepo.findOne).toHaveBeenCalledWith({ where: { id: userId } });
     });
@@ -162,23 +162,23 @@ describe('UserService', () => {
         id: '1',
         username: mockUsername,
         email: 'semi@gmail.com',
-        destroy : jest.fn(),
-      }
+        destroy: jest.fn(),
+      };
       mockUserRepo.findOne.mockResolvedValue(mockUser);
       mockUser.destroy = jest.fn().mockResolvedValue(true);
-  
+
       const result = await service.remove(mockUsername);
-  
+
       expect(mockUserRepo.findOne).toHaveBeenCalledWith({ where: { username: mockUsername } });
       expect(mockUser.destroy).toHaveBeenCalled();
       expect(result).toBeUndefined();
       expect(mockUserRepo.findOne).toHaveBeenCalledWith({ where: { username: mockUsername } });
     });
-  
+
     it.skip('throw an error when deleting a non-existent user', async () => {
       const mockUsername = 'nonExistentUser';
       mockUserRepo.findOne.mockResolvedValue(null);
-  
+
       await expect(service.remove(mockUsername)).rejects.toThrowError(NotFoundException);
       expect(mockUserRepo.findOne).toHaveBeenCalledWith({ where: { username: mockUsername } });
     });

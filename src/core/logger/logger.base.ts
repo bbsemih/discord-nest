@@ -16,6 +16,10 @@ export abstract class LoggerBase {
     this.logger.error(`${message} ${error.message}`, this.getServiceName(), LogLevelEnum.ERROR, this.getFileName(), LogTypeEnum.SERVICE);
   }
 
+  protected logDebug(message: string, idOrName?: string | number) {
+    this.logger.debug(`${message} ${idOrName}`, this.getServiceName(), LogLevelEnum.DEBUG, this.getFileName(), LogTypeEnum.SERVICE);
+  }
+
   protected abstract getServiceName(): string;
   protected abstract getFileName(): string;
 }

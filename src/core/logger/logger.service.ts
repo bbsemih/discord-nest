@@ -32,11 +32,12 @@ export class LoggerService implements LoggerF {
     });
   }
 
-  debug(msg: string, className: string, level: LogLevelEnum.DEBUG, type: LogTypeEnum.SERVICE): void {
+  debug(msg: string, className: string, level: LogLevelEnum.DEBUG, filename: string, type: LogTypeEnum.SERVICE): void {
     this.logger.log(msg, {
       type: type,
       level: level,
       class: className,
+      filename: filename,
     });
   }
 

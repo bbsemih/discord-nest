@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo, AutoIncrement } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Guild } from '../guild/guild.entity';
 
 @Table({

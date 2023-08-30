@@ -3,7 +3,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { MESSAGE_REPOSITORY } from '../constants';
 import { Message } from './message.entity';
 import { LoggerService } from '../../core/logger/logger.service';
-import { UploadService } from '../upload/upload.service';
+import { S3Service } from '../s3/s3.service';
 import { LoggerBase } from '../../core/logger/logger.base';
 import { basename } from 'path';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -16,7 +16,7 @@ export class MessageService extends LoggerBase {
     @Inject(MESSAGE_REPOSITORY) private readonly repo: typeof Message,
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     protected readonly logger: LoggerService,
-    protected readonly s3: UploadService,
+    protected readonly s3: S3Service,
   ) {
     super(logger);
   }

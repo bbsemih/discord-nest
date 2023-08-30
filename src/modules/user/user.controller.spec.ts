@@ -26,12 +26,8 @@ describe('UserController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [
-        { provide: AuthService, 
-          useValue: mockAuthService 
-        },
-        { provide: UserService, 
-          useValue: mockUserService 
-        },
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: UserService, useValue: mockUserService },
       ],
     }).compile();
 
@@ -53,7 +49,7 @@ describe('UserController', () => {
   });
 
   it('login updates session object and returns user', async () => {
-    const session = { userId: null };
+    //const session = { userId: null };
     //TODO
   });
 });
