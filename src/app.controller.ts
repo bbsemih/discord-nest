@@ -18,15 +18,4 @@ export class AppController {
       message: MESSAGES.SUCCESS,
     };
   }
-
-  @ApiResponse({ status: 200 })
-  @All('/health')
-  @ApiTags('health')
-  async health() {
-    return {
-      statusCode: STATUS_CODES.SUCCESS,
-      code: STATUS_CODES.SUCCESS,
-      message: MESSAGES.SUCCESS,
-    };
-  }
 }

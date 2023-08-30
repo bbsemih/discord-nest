@@ -75,8 +75,8 @@ export class GuildService extends LoggerBase {
     }
   }
 
-  async remove(id: string): Promise<void> {
-    const guild = await this.repo.findByPk<Guild>(id);
+  async remove(id: string) {
+    const guild = await this.repo.findOne<Guild>({ where: { id } });
     if (!guild) {
       this.logWarn('Guild not found:', id);
       throw new NotFoundException('Guild not found');

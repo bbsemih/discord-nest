@@ -9,10 +9,12 @@ import { Guild } from './guild.entity';
 import { mock, instance } from 'ts-mockito';
 import { User } from '../user/user.entity';
 
+
 describe('GuildService', () => {
   let service: GuildService;
   let mockLoggerService: LoggerService;
   let cacheService: Cache;
+  let model: typeof User;
 
   const mockGuildRepo = {
     create: jest.fn(),
@@ -137,7 +139,17 @@ describe('GuildService', () => {
   });
 
   describe('remove', () => {
-    it('remove a guild from database by id', async () => {});
+    it('remove a guild from database by id', async () => {
+      const mockGuildId = '1';
+      const mockGuild = jest.mocked<Guild>;
+
+      mockGuildRepo.findOne.mockResolvedValue(mockGuild);
+      mockGuild.destroy = jest.fn();
+
+      await service.remove(mockGuildId);
+
+      expect(mockGuild.destroy).toHaveBeenCalled();
+    });
   });
 
   describe('update', () => {
