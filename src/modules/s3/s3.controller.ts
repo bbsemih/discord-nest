@@ -1,4 +1,4 @@
-import {  Controller, Post, UploadedFile, UseInterceptors, Param } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, Param } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { S3Service } from './s3.service';
 import { FileValidationPipe } from './pipes/file-validator.pipe';
@@ -17,7 +17,7 @@ export class S3Controller {
   @UseInterceptors(FileInterceptor('file'))
   //is it really the best way to delete a file by its key??? it should be unique anyways
   async deleteFile(@Param('key') key: string) {
-    await this.s3Service.deleteFile({ Bucket: process.env.AWS_S3_BUCKET_NAME, Key: key});
+    await this.s3Service.deleteFile({ Bucket: process.env.AWS_S3_BUCKET_NAME, Key: key });
   }
 
   /*

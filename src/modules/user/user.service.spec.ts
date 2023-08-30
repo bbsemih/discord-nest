@@ -58,7 +58,7 @@ describe('UserService', () => {
   });
 
   describe('create', () => {
-    it('create  a new user', async () => {
+    it('create a new user', async () => {
       const mockUserDto = {} as UserDto;
       const mockCreatedUser = {} as User;
       mockUserRepo.create.mockResolvedValue(mockCreatedUser);
@@ -169,7 +169,6 @@ describe('UserService', () => {
 
       const result = await service.remove(mockUsername);
 
-      expect(mockUserRepo.findOne).toHaveBeenCalledWith({ where: { username: mockUsername } });
       expect(mockUser.destroy).toHaveBeenCalled();
       expect(result).toBeUndefined();
       expect(mockUserRepo.findOne).toHaveBeenCalledWith({ where: { username: mockUsername } });

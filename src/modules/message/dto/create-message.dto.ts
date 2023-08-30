@@ -9,4 +9,7 @@ export class CreateMessageDto {
 
   @IsNotEmpty()
   readonly guildID: string;
+
+  @IsNotEmpty()
+  readonly userId: string;
 }

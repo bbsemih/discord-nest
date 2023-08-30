@@ -59,6 +59,27 @@ export class UserService extends LoggerBase {
     }
   }
 
+  async findById(id: string) {
+    const cachedUser = await this.cacheService.get<User>(id);
+    if (cachedUser) {
+      this.logInfo(`user found in cache: ${cachedUser.email}`, cachedUser.id);
+      return cachedUser;
+    }
+    try {
+      const user = await this.repo.findOne<User>({ where: { id } });
+      if (user) {
+        await this.cacheService.set(id, user, 100000);
+        this.logInfo(`user found: ${user.email}`, `id: ${user.id}`);
+      } else {
+        this.logWarn(`user with id:${id} is not found!`, id);
+      }
+      return user;
+    } catch (err) {
+      this.logError(`Error finding user: ${err.message}`, err);
+      throw err;
+    }
+  }
+
   //findAll from where???
   async findAll() {
     try {

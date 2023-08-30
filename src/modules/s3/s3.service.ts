@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import type { ManagedUpload } from 'aws-sdk/clients/s3';
 import { LoggerService } from '../../core/logger/logger.service';
 import { basename } from 'path';
-import { LoggerBase } from 'src/core/logger/logger.base';
+import { LoggerBase } from '../../core/logger/logger.base';
 import { AWSError, S3 } from 'aws-sdk';
 
 @Injectable()
