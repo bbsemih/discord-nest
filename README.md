@@ -6,6 +6,7 @@
 
  * NestJS - Sequelize ORM
  * TypeScript
+ * Unit/Integration Testing with Jest
  * Docker
  * Redis for caching (TODO)
  * File Uploading via AWS S3
