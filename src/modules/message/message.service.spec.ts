@@ -9,9 +9,7 @@ import { S3Service } from '../s3/s3.service';
 import { instance, mock } from 'ts-mockito';
 import { Message } from './message.entity';
 import { Cache } from 'cache-manager';
-import { MessageDTO } from './dto/message.dto';
 import { NotFoundException } from '@nestjs/common';
-import { User } from '../user/user.entity';
 
 describe('MessageService', () => {
   let service: MessageService;
@@ -85,9 +83,15 @@ describe('MessageService', () => {
 
   describe('create', () => {
     it('create a new message', async () => {
+      const mockMessageDto = {
+        userId: '1',
+        text: 'semih2023',
+        guildID: '1',
+      };
     });
 
     it('throw an error when creating a message fails in service', async () => {
+
     });
   });
 

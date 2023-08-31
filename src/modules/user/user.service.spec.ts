@@ -75,6 +75,7 @@ describe('UserService', () => {
       mockUserRepo.create.mockRejectedValue(mockError);
 
       await expect(service.create(mockUserDto)).rejects.toThrowError(mockError);
+      expect(mockUserRepo.create).toHaveBeenCalledWith(mockUserDto);
     });
   });
 

@@ -14,7 +14,7 @@ export class MessageController {
 
   @Post()
   async createMessage(@Body() createMessageDto: CreateMessageDto): Promise<Message> {
-    return this.messageService.create(createMessageDto.text);
+    return this.messageService.create(createMessageDto);
   }
 
   @Get(':id')

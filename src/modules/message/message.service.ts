@@ -38,7 +38,6 @@ export class MessageService extends LoggerBase {
       if (!user) {
         throw new NotFoundException('User not found');
       }
-
       const message = await this.repo.create({
         userId: messageInput.userId,
         text: messageInput.text,

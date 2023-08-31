@@ -8,12 +8,12 @@ import { GuildDTO } from './dto/guild.dto';
 import { Guild } from './guild.entity';
 import { mock, instance } from 'ts-mockito';
 import { User } from '../user/user.entity';
+import { guildProviders } from './guild.providers';
 
 describe('GuildService', () => {
   let service: GuildService;
   let mockLoggerService: LoggerService;
   let cacheService: Cache;
-  let model: typeof User;
 
   const mockGuildRepo = {
     create: jest.fn(),
@@ -27,23 +27,13 @@ describe('GuildService', () => {
     set: jest.fn(),
   };
 
-  const mockGuildData = {
-    id: '1',
-    name: 'test',
-    description: 'test',
-    ownerId: '1',
-    icon: 'test',
-    roles: ['admin', 'moderator'],
-    region: 'test',
-    nsfwLevel: 1,
-  };
-
   beforeEach(async () => {
     mockLoggerService = mock(LoggerService);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         GuildService,
+        ...guildProviders,
         {
           provide: LoggerService,
           useValue: instance(mockLoggerService),
@@ -68,7 +58,7 @@ describe('GuildService', () => {
   });
 
   describe('create', () => {
-    it('creates a guild with required fields', async () => {
+    it('creates a new guild', async () => {
       const mockGuildDto = {} as GuildDTO;
       const mockCreatedGuild = {} as Guild;
       mockGuildRepo.create.mockResolvedValue(mockCreatedGuild);
@@ -76,6 +66,15 @@ describe('GuildService', () => {
       const result = await service.create(mockGuildDto);
 
       expect(result).toBe(mockCreatedGuild);
+      expect(mockGuildRepo.create).toHaveBeenCalledWith(mockGuildDto);
+    });
+
+    it('throws an error when creating a new guild fails in service', async () => {
+      const mockGuildDto = {} as GuildDTO;
+      const mockError = new Error('Mock error!');
+      mockGuildRepo.create.mockRejectedValue(mockError);
+
+      await expect(service.create(mockGuildDto)).rejects.toThrow();
       expect(mockGuildRepo.create).toHaveBeenCalledWith(mockGuildDto);
     });
   });
@@ -91,8 +90,7 @@ describe('GuildService', () => {
       const result = await service.findOne(mockGuildId);
 
       expect(result).toBe(mockGuild);
-      //uncomment this when cache is implemented
-      //expect(cacheService.get).toHaveBeenCalledWith(mockGuildId);
+      expect(cacheService.get).toHaveBeenCalledWith(mockGuildId);
       expect(mockGuildRepo.findOne).toHaveBeenCalledWith({ where: { id: mockGuildId } });
     });
 
@@ -101,17 +99,15 @@ describe('GuildService', () => {
       const mockGuild = jest.mocked<Guild>;
 
       mockCacheManager.get.mockResolvedValue(mockGuild);
-      mockGuildRepo.findOne.mockResolvedValue(null);
-
       const result = await service.findOne(mockGuildId);
 
       expect(result).toBe(mockGuild);
-      //uncomment this when cache is implemented
-      //expect(cacheService.get).toHaveBeenCalledWith(mockGuildId);
-      expect(mockGuildRepo.findOne).toHaveBeenCalledWith({ where: { id: mockGuildId } });
+      expect(cacheService.get).toHaveBeenCalledWith(mockGuildId);
     });
+  });
 
-    it('find all guilds of specific user', async () => {
+  describe('findAll', () => {
+    it('find all guilds of a user', async () => {
       const mockUserId = '1';
       const mockGuilds = [jest.mocked<Guild>];
 
@@ -125,33 +121,77 @@ describe('GuildService', () => {
 
     it('find all users in a specific guild', async () => {
       const mockGuildId = '1';
-      const mockGuild = jest.mocked<Guild>;
-      const mockUsers = jest.mocked<User[]>;
+      const mockGuild = {
+        id: mockGuildId,
+        name: 'test',
+        ownerId: '1',
+        region: 'test',
+        members: [],
+      }
+      const mockUsers = [jest.mocked<User>];
 
-      mockGuildRepo.findByPk.mockResolvedValue(mockGuild);
-      //mockGuild.members = mockUsers;
+      mockGuildRepo.findOne.mockResolvedValue(mockGuild);
+      mockGuild.members = mockUsers;
+
       const result = await service.findUsersInGuild(mockGuildId);
 
       expect(result).toBe(mockUsers);
-      expect(mockGuildRepo.findByPk).toHaveBeenCalledWith(mockGuildId, { include: [{ model: User, as: 'members' }] });
+      expect(mockGuildRepo.findOne).toHaveBeenCalledWith({ where: { id: mockGuildId } });
     });
   });
 
   describe('remove', () => {
-    it('remove a guild from database by id', async () => {
+    it('remove a guild from database', async () => {
       const mockGuildId = '1';
-      const mockGuild = jest.mocked<Guild>;
-
+      const mockGuild =  {
+        id: mockGuildId,
+        name: 'test',
+        description: 'test',
+        ownerId: '1',
+        region: 'test',
+        destroy: jest.fn(),
+      }
       mockGuildRepo.findOne.mockResolvedValue(mockGuild);
-      mockGuild.destroy = jest.fn();
+      mockGuild.destroy = jest.fn().mockResolvedValue(true);
 
-      await service.remove(mockGuildId);
+      const result = await service.remove(mockGuildId);
 
+      expect(result).toBeUndefined();
+      expect(mockGuildRepo.findOne).toHaveBeenCalledWith({ where: { id: mockGuildId } });
       expect(mockGuild.destroy).toHaveBeenCalled();
+    });
+
+    it('throw an error when deleting a non-existent guild', async () => {
+      const mockGuildId = '1';
+      mockGuildRepo.findOne.mockResolvedValue(null);
+
+      await expect(service.remove(mockGuildId)).rejects.toThrow();
+      expect(mockGuildRepo.findOne).toHaveBeenCalledWith({ where: { id: mockGuildId } });
     });
   });
 
   describe('update', () => {
-    it('update a guild with given id and attributes', async () => {});
+    it('update a guild with given id and attributes', async () => {
+      const mockGuildId = '1';
+      const mockGuild = {
+        id: mockGuildId,
+        name: 'test',
+        description: 'test',
+        ownerId: '1',
+        region: 'us-east-2',
+        save: jest.fn(),
+      };
+      const mockUpdatedAttributes = { name: 'UpdatedName', region: 'us-east-1' };
+      mockGuildRepo.findByPk.mockResolvedValue(mockGuild);
+      mockGuild.save = jest.fn().mockResolvedValue(mockGuild);
+
+      const result = await service.update(mockGuildId, mockUpdatedAttributes);
+
+      expect(result).toBe(mockGuild);
+      expect(mockGuildRepo.findByPk).toHaveBeenCalledWith(mockGuildId);
+      expect(mockGuild.save).toHaveBeenCalled();
+      expect(mockGuild.name).toBe(mockUpdatedAttributes.name);
+      expect(mockGuild.region).toBe(mockUpdatedAttributes.region);
+    });
   });
 });

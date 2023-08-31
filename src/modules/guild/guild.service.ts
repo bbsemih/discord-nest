@@ -39,6 +39,11 @@ export class GuildService extends LoggerBase {
   }
 
   async findOne(id: string): Promise<Guild> {
+    const cachedGuild = await this.cacheService.get<Guild>(id);
+    if (cachedGuild) {
+      this.logInfo('Guild found in cache:', id);
+      return cachedGuild;
+    }
     const guild = await this.repo.findOne<Guild>({ where: { id } });
     if (!guild) {
       this.logWarn('Guild not found. ID:', id);
@@ -60,9 +65,7 @@ export class GuildService extends LoggerBase {
 
   async findUsersInGuild(guildId: string): Promise<User[]> {
     try {
-      const guild = await this.repo.findByPk<Guild>(guildId, {
-        include: [{ model: User, as: 'members' }],
-      });
+      const guild = await this.repo.findOne<Guild>({ where: { id: guildId } });
 
       if (!guild) {
         throw new NotFoundException('Guild not found');
