@@ -1,4 +1,4 @@
-import { Controller, Get, UseInterceptors, Param, Delete, Patch, Body } from '@nestjs/common';
+import { Controller, Get, UseInterceptors, Param, Delete, Patch, Body, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,6 +6,7 @@ import { User } from './user.entity';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { ApiTags } from '@nestjs/swagger';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { signupUserDTO } from '../auth/dto/signup-user.dto';
 
 @SkipThrottle()
 @ApiTags('user')
@@ -30,6 +31,11 @@ export class UserController {
   @Delete('/:username')
   removeUser(@Param('username') username: string) {
     return this.userService.remove(username);
+  }
+
+  @Post()
+  createUser(@Body() body: signupUserDTO) {
+    return this.userService.create(body);
   }
 
   @Throttle(3, 60)

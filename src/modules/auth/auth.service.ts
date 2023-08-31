@@ -10,7 +10,9 @@ import { basename } from 'path';
 
 @Injectable()
 export class AuthService extends LoggerBase {
-  constructor(private readonly userService: UserService, private readonly jwtService: JwtService, protected readonly logger: LoggerService) {
+  constructor(private readonly userService: UserService, 
+    private readonly jwtService: JwtService, 
+    protected readonly logger: LoggerService) {
     super(logger);
   }
 
@@ -50,7 +52,7 @@ export class AuthService extends LoggerBase {
       const newUser = await this.userService.create(newUserWithoutId);
       this.logInfo('User signed up', newUser.id);
 
-      const token = await this.generateToken(newUser);
+      const token = await this.generateToken(newUser.id);
       return { user: newUser, token };
     } catch (error) {
       this.logError('Error creating user:', error);

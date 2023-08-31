@@ -11,4 +11,8 @@ describe('UploadController', () => {
 
     controller = module.get<S3Controller>(S3Controller);
   });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
 });

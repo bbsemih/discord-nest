@@ -29,6 +29,7 @@ export class UserService extends LoggerBase {
   async create(user: UserDto): Promise<User> {
     try {
       const newUser = await this.repo.create<User>(user);
+      console.log(newUser);
       this.logInfo('User created:', newUser.id);
       return newUser;
     } catch (err) {
@@ -121,6 +122,17 @@ export class UserService extends LoggerBase {
       this.logInfo(`user deleted: ${user.username}`, user.id);
     } catch (error) {
       this.logError(`Error deleting user: ${error.message}`, error);
+      throw error;
+    }
+  }
+
+  async getTotalUserCount() {
+    try {
+      const totalUsers = await this.repo.count();
+      this.logInfo('Total users:', totalUsers);
+      return totalUsers;
+    } catch (error) {
+      this.logError('Error gathering user stats:', error);
       throw error;
     }
   }

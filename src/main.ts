@@ -16,7 +16,7 @@ async function bootstrap() {
   app.use(
     require('express-status-monitor')({
       title: 'discord-nest',
-      path: '/v1/monitor/status',
+      path: '/monitor/status',
       chartVisibility: {
         cpu: true,
         mem: true,
