@@ -6,8 +6,11 @@ import helmet from 'helmet';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+const signalNames: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.setGlobalPrefix('api');
   //eslint-disable-next-line @typescript-eslint/no-var-requires
   app.use(
@@ -26,6 +29,17 @@ async function bootstrap() {
       },
     }),
   );
+
+  /*
+  const snapshotFolderPath = path.join(__dirname, 'snapshots');
+  heapdump.writeSnapshot(snapshotFolderPath, function(err, filename) {
+    if (err) {
+      console.error('Error writing snapshot:', err);
+    } else {
+      console.log('Snapshot written to', filename);
+    }
+  });
+  */
 
   app.enableVersioning({
     type: VersioningType.URI,
@@ -56,6 +70,28 @@ async function bootstrap() {
   } else {
     app.enableCors();
   }
+
+  process.on('unhandledRejection', (reason, promise) => {
+    console.log('Unhandled Rejection - Reason:', reason);
+    promise.catch((err: Error) => {
+      console.log('Unhandled Rejection - Error:', err);
+      process.exit(1);
+    });
+  });
+
+  process.on('uncaughtException', error => {
+    console.log('Uncaught Exception - Error:', error);
+    process.exit(1);
+  });
+
+  signalNames.forEach(signalName => {
+    process.on(signalName, async () => {
+      await app.close();
+      console.log(`Process terminated with signal: ${signalName}`);
+      process.exit(0);
+    });
+  });
+
   await app.listen(3000);
 }
 bootstrap();

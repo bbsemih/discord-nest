@@ -90,9 +90,7 @@ describe('MessageService', () => {
       };
     });
 
-    it('throw an error when creating a message fails in service', async () => {
-
-    });
+    it('throw an error when creating a message fails in service', async () => {});
   });
 
   describe('findOne', () => {
@@ -190,7 +188,7 @@ describe('MessageService', () => {
   describe('update', () => {
     it('update the message with given id and attributes', async () => {
       const messageId = '123';
-      const updateAttr = { text:'semih2023', s3Url: 'semihb.com/image' };
+      const updateAttr = { text: 'semih2023', s3Url: 'semihb.com/image' };
       const mockMessage = {
         id: messageId,
         text: 'semih2023',

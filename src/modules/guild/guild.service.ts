@@ -110,4 +110,27 @@ export class GuildService extends LoggerBase {
       throw err;
     }
   }
+
+  async getTotalGuildCount(): Promise<number> {
+    try {
+      const totalGuilds = await this.repo.count();
+      return totalGuilds;
+    } catch (error) {
+      this.logError('Error getting total guild count:', error);
+      throw error;
+    }
+  }
+
+  async getMostActiveGuilds(): Promise<Guild[]> {
+    try {
+      const mostActiveGuilds = await this.repo.findAll({
+        order: [['messageCount', 'DESC']],
+        limit: 10,
+      });
+      return mostActiveGuilds;
+    } catch (error) {
+      this.logError('Error getting most active guilds:', error);
+      throw error;
+    }
+  }
 }

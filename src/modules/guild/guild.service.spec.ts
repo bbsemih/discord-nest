@@ -127,7 +127,7 @@ describe('GuildService', () => {
         ownerId: '1',
         region: 'test',
         members: [],
-      }
+      };
       const mockUsers = [jest.mocked<User>];
 
       mockGuildRepo.findOne.mockResolvedValue(mockGuild);
@@ -143,14 +143,14 @@ describe('GuildService', () => {
   describe('remove', () => {
     it('remove a guild from database', async () => {
       const mockGuildId = '1';
-      const mockGuild =  {
+      const mockGuild = {
         id: mockGuildId,
         name: 'test',
         description: 'test',
         ownerId: '1',
         region: 'test',
         destroy: jest.fn(),
-      }
+      };
       mockGuildRepo.findOne.mockResolvedValue(mockGuild);
       mockGuild.destroy = jest.fn().mockResolvedValue(true);
 

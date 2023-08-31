@@ -93,7 +93,7 @@ export class MessageService extends LoggerBase {
       throw new NotFoundException('messages not found');
     }
     return messages;
-  };
+  }
 
   async remove(id: string) {
     const message = await this.repo.findOne<Message>({ where: { id } });
@@ -125,6 +125,44 @@ export class MessageService extends LoggerBase {
     } catch (err) {
       this.logError('Error updating message:', err);
       throw err;
+    }
+  }
+
+  async getTotalMessageCount(): Promise<number> {
+    try {
+      const totalMessages = await this.repo.count();
+      return totalMessages;
+    } catch (error) {
+      this.logError('Error getting total message count:', error);
+      throw error;
+    }
+  }
+
+  async getUniqueUserCount(): Promise<number> {
+    try {
+      const uniqueUsers = await this.repo.count({
+        col: 'userId',
+        distinct: true,
+      });
+      return uniqueUsers;
+    } catch (error) {
+      this.logError('Error getting unique user count:', error);
+      throw error;
+    }
+  }
+
+  //TODO
+  //should select the busiest hour by taking the created at and slicing it to the hour
+  async getBusiestHours(): Promise<number> {
+    try {
+      const busiestHours = await this.repo.count({
+        col: 'createdAt',
+        distinct: true,
+      });
+      return busiestHours;
+    } catch (error) {
+      this.logError('Error getting busiest hours:', error);
+      throw error;
     }
   }
 }

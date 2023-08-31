@@ -7,14 +7,16 @@ import { Guild } from '../guild/guild.entity';
   underscored: true,
 })
 export class Message extends Model<Message> {
-  @PrimaryKey
-  @AutoIncrement
-  @Column(DataType.BIGINT)
-  id: number;
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    primaryKey: true,
+  })
+  id: string;
 
   @ForeignKey(() => User)
   @Column({
-    type: DataType.UUID,
+    type: DataType.STRING,
     allowNull: false,
     field: 'user_id',
   })

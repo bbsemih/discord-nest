@@ -17,6 +17,8 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronModule } from './modules/cron/cron.module';
 
 dotenv.config();
 // eslint-disable-next-line
@@ -43,6 +45,7 @@ const cookieSession = require('cookie-session');
       username: process.env.REDIS_USERNAME,
       password: process.env.REDIS_PASSWORD,
     }),
+    ScheduleModule.forRoot(),
     GuildModule,
     UserModule,
     AuthModule,
@@ -50,6 +53,7 @@ const cookieSession = require('cookie-session');
     MessageModule,
     LoggerModule,
     S3Module,
+    CronModule,
   ],
   controllers: [AppController],
   providers: [
