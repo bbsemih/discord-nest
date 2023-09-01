@@ -10,9 +10,7 @@ import { basename } from 'path';
 
 @Injectable()
 export class AuthService extends LoggerBase {
-  constructor(private readonly userService: UserService, 
-    private readonly jwtService: JwtService, 
-    protected readonly logger: LoggerService) {
+  constructor(private readonly userService: UserService, private readonly jwtService: JwtService, protected readonly logger: LoggerService) {
     super(logger);
   }
 

@@ -1,10 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { ManagedUpload } from 'aws-sdk/clients/s3';
 import { LoggerService } from '../../core/logger/logger.service';
 import { basename } from 'path';
 import { LoggerBase } from '../../core/logger/logger.base';
 import { AWSError, S3 } from 'aws-sdk';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+
+export interface IChangeFolderResponse {
+  url: string;
+  key: string;
+}
 
 @Injectable()
 export class S3Service extends LoggerBase {
@@ -12,7 +19,7 @@ export class S3Service extends LoggerBase {
   private region = this.configService.getOrThrow('AWS_S3_REGION');
   private readonly s3;
 
-  constructor(private readonly configService: ConfigService, protected readonly logger: LoggerService) {
+  constructor(private readonly configService: ConfigService, protected readonly logger: LoggerService, @Inject(CACHE_MANAGER) private cacheService: Cache) {
     super(logger);
     this.s3 = this.getS3();
   }
@@ -62,6 +69,7 @@ export class S3Service extends LoggerBase {
     }
   }
 
+  //delete also from cache if exists
   async deleteFile(deleteParams: S3.DeleteObjectRequest): Promise<S3.DeleteObjectOutput> {
     this.logInfo('Deleting file:', deleteParams.Key);
     return await new Promise((resolve, reject) => {
@@ -77,5 +85,41 @@ export class S3Service extends LoggerBase {
     });
   }
 
-  //getFile from aws s3???
+  //delete also from cache if exists
+  async deleteFiles(deleteParams: S3.DeleteObjectsRequest): Promise<S3.DeleteObjectsOutput> {
+    this.logInfo('Deleting files:', deleteParams.Delete.Objects.map(obj => obj.Key).join(', '));
+    return new Promise((resolve, reject) => {
+      this.s3.deleteObjects(deleteParams, (err: AWSError, data: S3.DeleteObjectsOutput) => {
+        if (err) {
+          this.logError('Error deleting files:', err);
+          return reject(err.message);
+        }
+
+        const deletedKeys = data.Deleted.map(deletedObj => deletedObj.Key);
+        this.logDebug('Files deleted successfully:', deletedKeys.join(', '));
+
+        resolve(data);
+      });
+    });
+  }
+
+  //delete also from cache if exists
+  async copyFile(copyParams: S3.CopyObjectRequest): Promise<S3.CopyObjectOutput> {
+    this.logInfo('Copying file:', copyParams.Key);
+    return new Promise((resolve, reject) => {
+      this.s3.copyObject(copyParams, (err: AWSError, data: S3.CopyObjectOutput) => {
+        if (err) {
+          this.logError('Error copying file:', err);
+          return reject(err.message);
+        }
+
+        this.logDebug('File copied successfully:', copyParams.Key);
+        resolve(data);
+      });
+    });
+  }
+
+  //async getFileStream(key: string): Promise<S3.GetObjectOutput> {}
+
+  //async moveFile(sourceKey: string, destinationKey: string): Promise<IChangeFolderResponse> {}
 }

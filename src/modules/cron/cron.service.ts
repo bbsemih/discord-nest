@@ -9,10 +9,12 @@ import { UserService } from '../user/user.service';
 
 @Injectable()
 export class CronService extends LoggerBase {
-  constructor(protected readonly logger: LoggerService, 
-    private readonly messageService: MessageService, 
+  constructor(
+    protected readonly logger: LoggerService,
+    private readonly messageService: MessageService,
     private readonly userService: UserService,
-    private readonly guildService: GuildService) {
+    private readonly guildService: GuildService,
+  ) {
     super(logger);
   }
 
@@ -42,7 +44,7 @@ export class CronService extends LoggerBase {
       throw error;
     }
   }
-  
+
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
     name: 'guildStats',
     timeZone: 'Europe/Istanbul',
@@ -82,4 +84,18 @@ export class CronService extends LoggerBase {
     timeZone: 'Europe/Istanbul',
   })
   async takeSnapshot(): Promise<void> {}
+
+  //deleting unnecessary logs. delete them from redis?? delete them from db??? delete them from elastic???
+  @Cron(CronExpression.EVERY_WEEKEND, {
+    name: 'deleteLogs',
+    timeZone: 'Europe/Istanbul',
+  })
+  async deleteLogs(): Promise<void> {}
+
+  //delete s3 files that are older than 30 days. have to get the creation date from s3 and compare it with current date
+  @Cron(CronExpression.EVERY_WEEKEND, {
+    name: 'deleteS3Files',
+    timeZone: 'Europe/Istanbul',
+  })
+  async deleteFromS3(): Promise<void> {}
 }

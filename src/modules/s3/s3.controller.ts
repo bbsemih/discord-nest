@@ -1,10 +1,11 @@
-import { Controller, Post, UploadedFile, UseInterceptors, Param } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, Param, Body } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { S3Service } from './s3.service';
 import { FileValidationPipe } from './pipes/file-validator.pipe';
 
 @Controller('s3')
 export class S3Controller {
+  private bucketName = process.env.AWS_S3_BUCKET_NAME;
   constructor(private readonly s3Service: S3Service) {}
 
   @Post('/upload')
@@ -17,8 +18,24 @@ export class S3Controller {
   @UseInterceptors(FileInterceptor('file'))
   //is it really the best way to delete a file by its key??? it should be unique anyways
   async deleteFile(@Param('key') key: string) {
-    await this.s3Service.deleteFile({ Bucket: process.env.AWS_S3_BUCKET_NAME, Key: key });
+    await this.s3Service.deleteFile({ Bucket: this.bucketName, Key: key });
   }
+
+  @Post('/delete/')
+  @UseInterceptors(FileInterceptor('file'))
+  async deleteFiles(@Body() keys: string[]) {
+    await this.s3Service.deleteFiles({ Bucket: this.bucketName, Delete: { Objects: keys.map(key => ({ Key: key })) } });
+  }
+
+  @Post('/copy')
+  @UseInterceptors(FileInterceptor('file'))
+  async copyFile(@Body() { sourceKey, destinationKey }: { sourceKey: string; destinationKey: string }) {
+    await this.s3Service.copyFile({ Bucket: this.bucketName, CopySource: `${this.bucketName}/${sourceKey}`, Key: destinationKey });
+  }
+
+  @Post('/move')
+  @UseInterceptors(FileInterceptor('file'))
+  async moveFile(@Body() { sourceKey, destinationKey }: { sourceKey: string; destinationKey: string }) {}
 
   /*
   @Get(':key')

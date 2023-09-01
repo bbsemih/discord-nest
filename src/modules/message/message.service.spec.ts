@@ -83,11 +83,13 @@ describe('MessageService', () => {
 
   describe('create', () => {
     it('create a new message', async () => {
+      /*
       const mockMessageDto = {
         userId: '1',
         text: 'semih2023',
         guildID: '1',
       };
+      */
     });
 
     it('throw an error when creating a message fails in service', async () => {});

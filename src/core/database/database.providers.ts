@@ -26,7 +26,7 @@ export const databaseProviders = [
           config = databaseConfig.development;
       }
       const sequelize = new Sequelize(config);
-      sequelize.addModels([User, Message, Guild]);
+      sequelize.addModels([Message, User, Guild]);
       await sequelize.sync();
       return sequelize;
     },

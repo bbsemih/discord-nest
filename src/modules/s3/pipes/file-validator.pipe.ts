@@ -10,7 +10,6 @@ export class FileValidationPipe implements PipeTransform {
     }
 
     if (!allowedFileTypes.includes(value.mimetype)) {
-      console.log(value.mimetype);
       throw new BadRequestException('Invalid file type!');
     }
     return value;

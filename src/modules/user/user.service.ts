@@ -29,7 +29,6 @@ export class UserService extends LoggerBase {
   async create(user: UserDto): Promise<User> {
     try {
       const newUser = await this.repo.create<User>(user);
-      console.log(newUser);
       this.logInfo('User created:', newUser.id);
       return newUser;
     } catch (err) {

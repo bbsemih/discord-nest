@@ -12,8 +12,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
-  //eslint-disable-next-line @typescript-eslint/no-var-requires
   app.use(
+    //eslint-disable-next-line @typescript-eslint/no-var-requires
     require('express-status-monitor')({
       title: 'discord-nest',
       path: '/monitor/status',

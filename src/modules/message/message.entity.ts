@@ -16,7 +16,7 @@ export class Message extends Model<Message> {
 
   @ForeignKey(() => User)
   @Column({
-    type: DataType.STRING,
+    type: DataType.UUID,
     allowNull: false,
     field: 'user_id',
   })
