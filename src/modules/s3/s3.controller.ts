@@ -16,7 +16,6 @@ export class S3Controller {
 
   @Post('/delete/:key')
   @UseInterceptors(FileInterceptor('file'))
-  //is it really the best way to delete a file by its key??? it should be unique anyways
   async deleteFile(@Param('key') key: string) {
     await this.s3Service.deleteFile({ Bucket: this.bucketName, Key: key });
   }
@@ -36,20 +35,4 @@ export class S3Controller {
   @Post('/move')
   @UseInterceptors(FileInterceptor('file'))
   async moveFile(@Body() { sourceKey, destinationKey }: { sourceKey: string; destinationKey: string }) {}
-
-  /*
-  @Get(':key')
-  async getFile(@Param('key') key: string, @Res() res: Response) {
-    try {
-      const fileStream = await this.uploadService.getFileStream(key);
-
-      const contentType = fileStream.ContentType;
-      res.setHeader('Content-Type', contentType);
-      fileStream.pipe(res);// Pipe the S3 file stream to the response
-    } 
-    catch (error) {
-      res.status(404).send(error.message);
-    }
-  }
-  */
 }

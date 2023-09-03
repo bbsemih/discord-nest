@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, HttpCode } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { ManagedUpload } from 'aws-sdk/clients/s3';
 import { LoggerService } from '../../core/logger/logger.service';
@@ -19,7 +19,9 @@ export class S3Service extends LoggerBase {
   private region = this.configService.getOrThrow('AWS_S3_REGION');
   private readonly s3;
 
-  constructor(private readonly configService: ConfigService, protected readonly logger: LoggerService, @Inject(CACHE_MANAGER) private cacheService: Cache) {
+  constructor(private readonly configService: ConfigService, 
+    protected readonly logger: LoggerService, 
+    @Inject(CACHE_MANAGER) private cacheService: Cache) {
     super(logger);
     this.s3 = this.getS3();
   }
@@ -41,7 +43,7 @@ export class S3Service extends LoggerBase {
       region: this.region,
     });
   }
-
+  
   async uploadFile(filename: string, file: Buffer): Promise<ManagedUpload.SendData> {
     try {
       this.logInfo('Uploading file:', filename);
@@ -69,25 +71,41 @@ export class S3Service extends LoggerBase {
     }
   }
 
-  //delete also from cache if exists
   async deleteFile(deleteParams: S3.DeleteObjectRequest): Promise<S3.DeleteObjectOutput> {
     this.logInfo('Deleting file:', deleteParams.Key);
+    try {
+      //getting the file metadata
+      await this.s3.headObject({ Bucket: this.bucketS3, Key: deleteParams.Key }).promise();
+    } catch(err) {
+      if (err.code == 'NotFound') {
+        this.logDebug('File not found! No need to delete:', deleteParams.Key)
+        return Promise.resolve({}); 
+      } else {
+        this.logError('Error checking if file exists: ', err);
+        return Promise.reject(err);
+      }
+    }
+
     return await new Promise((resolve, reject) => {
       this.s3.deleteObject(deleteParams, (err: AWSError, data: S3.DeleteObjectOutput) => {
         if (err) {
           this.logError('Error deleting file:', err);
+          console.log(err)
           return reject(err.message);
         }
-
         this.logDebug('File deleted successfully:', deleteParams.Key);
         resolve(data);
       });
     });
   }
 
-  //delete also from cache if exists
   async deleteFiles(deleteParams: S3.DeleteObjectsRequest): Promise<S3.DeleteObjectsOutput> {
     this.logInfo('Deleting files:', deleteParams.Delete.Objects.map(obj => obj.Key).join(', '));
+    try {
+      //TODO
+    } catch(err) {
+    }
+
     return new Promise((resolve, reject) => {
       this.s3.deleteObjects(deleteParams, (err: AWSError, data: S3.DeleteObjectsOutput) => {
         if (err) {
@@ -103,7 +121,6 @@ export class S3Service extends LoggerBase {
     });
   }
 
-  //delete also from cache if exists
   async copyFile(copyParams: S3.CopyObjectRequest): Promise<S3.CopyObjectOutput> {
     this.logInfo('Copying file:', copyParams.Key);
     return new Promise((resolve, reject) => {
@@ -119,7 +136,8 @@ export class S3Service extends LoggerBase {
     });
   }
 
-  //async getFileStream(key: string): Promise<S3.GetObjectOutput> {}
-
+  public getUrlString(key: string): string {
+    return `https://${this.bucketS3}.s3.amazonaws.com/${key}`;//region???
+  }
   //async moveFile(sourceKey: string, destinationKey: string): Promise<IChangeFolderResponse> {}
 }
