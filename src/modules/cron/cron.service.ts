@@ -6,6 +6,7 @@ import { basename } from 'path';
 import { MessageService } from '../message/message.service';
 import { GuildService } from '../guild/guild.service';
 import { UserService } from '../user/user.service';
+import { S3Service } from '../s3/s3.service';
 
 @Injectable()
 export class CronService extends LoggerBase {
@@ -14,6 +15,7 @@ export class CronService extends LoggerBase {
     private readonly messageService: MessageService,
     private readonly userService: UserService,
     private readonly guildService: GuildService,
+    private readonly s3Service: S3Service,
   ) {
     super(logger);
   }
@@ -69,7 +71,7 @@ export class CronService extends LoggerBase {
   async gatherUserStats(): Promise<void> {
     try {
       const totalUsers = await this.userService.getTotalUserCount();
-      //whats the best approach to keep track of last login details??? in cache??? in db??? from cookie??? TODO: most active users
+      //whats the best approach to keep track of last login details? cache,db,cookie? TODO: most active users
       // const mostActiveUsers = await this.userService.getMostActiveUsers();
       this.logInfo('Total users:', totalUsers);
     } catch (error) {
@@ -78,24 +80,29 @@ export class CronService extends LoggerBase {
     }
   }
 
-  //should this be every hour? every 30 minutes? every day?
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT, {
+  @Cron(CronExpression.EVERY_2_HOURS, {
     name: 'takeSnapshot',
     timeZone: 'Europe/Istanbul',
   })
   async takeSnapshot(): Promise<void> {}
 
-  //deleting unnecessary logs. delete them from redis?? delete them from db??? delete them from elastic???
+  //deleting unnecessary logs. delete them from redis, db, elastic???
   @Cron(CronExpression.EVERY_WEEKEND, {
     name: 'deleteLogs',
     timeZone: 'Europe/Istanbul',
   })
   async deleteLogs(): Promise<void> {}
 
-  //delete s3 files that are older than 30 days. have to get the creation date from s3 and compare it with current date
   @Cron(CronExpression.EVERY_WEEKEND, {
-    name: 'deleteS3Files',
+    name: 'deleteTempS3Files',
     timeZone: 'Europe/Istanbul',
   })
-  async deleteFromS3(): Promise<void> {}
+  async deleteTempS3(): Promise<void> {
+    try {
+      await this.s3Service.deleteAllTemp();
+    } catch (error) {
+      this.logError('Error deleting temp s3 files:', error);
+      throw error;
+    }
+  }
 }
