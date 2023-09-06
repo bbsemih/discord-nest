@@ -7,6 +7,7 @@ import { MessageService } from '../message/message.service';
 import { GuildService } from '../guild/guild.service';
 import { UserService } from '../user/user.service';
 import { S3Service } from '../s3/s3.service';
+import { RedisService } from 'src/core/redis/redis.service';
 
 @Injectable()
 export class CronService extends LoggerBase {
@@ -16,6 +17,7 @@ export class CronService extends LoggerBase {
     private readonly userService: UserService,
     private readonly guildService: GuildService,
     private readonly s3Service: S3Service,
+    private readonly redisService: RedisService,
   ) {
     super(logger);
   }
@@ -37,6 +39,17 @@ export class CronService extends LoggerBase {
       const totalMessages = await this.messageService.getTotalMessageCount();
       const getBusiestHours = await this.messageService.getBusiestHours();
       const uniqueUsers = await this.messageService.getUniqueUserCount();
+
+      const key = 'messageStats';
+      const currentDate = new Date();
+      const logEntry = {
+        date: currentDate.toISOString(),
+        totalMessages,
+        uniqueUsers,
+        busiestHours: getBusiestHours,
+      };
+
+      await this.redisService.hset(key, currentDate.toISOString(), JSON.stringify(logEntry));
 
       this.logInfo('Total messages:', totalMessages);
       this.logInfo('Unique users:', uniqueUsers);
@@ -79,12 +92,6 @@ export class CronService extends LoggerBase {
       throw error;
     }
   }
-
-  @Cron(CronExpression.EVERY_2_HOURS, {
-    name: 'takeSnapshot',
-    timeZone: 'Europe/Istanbul',
-  })
-  async takeSnapshot(): Promise<void> {}
 
   //deleting unnecessary logs. delete them from redis, db, elastic???
   @Cron(CronExpression.EVERY_WEEKEND, {

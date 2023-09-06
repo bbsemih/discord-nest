@@ -1,20 +1,15 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './user.entity';
 import { USER_REPOSITORY } from '../constants';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { LoggerService } from '../../core/logger/logger.service';
-import { Cache } from 'cache-manager';
 import { UserDto } from './dto/user.dto';
 import { LoggerBase } from '../../core/logger/logger.base';
 import { basename } from 'path';
+import { RedisService } from '../../core/redis/redis.service';
 
 @Injectable()
 export class UserService extends LoggerBase {
-  constructor(
-    @Inject(USER_REPOSITORY) private readonly repo: typeof User,
-    @Inject(CACHE_MANAGER) private cacheService: Cache,
-    protected readonly logger: LoggerService,
-  ) {
+  constructor(@Inject(USER_REPOSITORY) private readonly repo: typeof User, private readonly redis: RedisService, protected readonly logger: LoggerService) {
     super(logger);
   }
 
@@ -37,9 +32,8 @@ export class UserService extends LoggerBase {
     }
   }
 
-  //@Httpmethod?? to get method in log??
   async findOne(username: string) {
-    const cachedUser = await this.cacheService.get<User>(username);
+    const cachedUser = await this.redis.get<User>(username);
     if (cachedUser) {
       this.logInfo(`user found in cache: ${cachedUser.email}`, cachedUser.id);
       return cachedUser;
@@ -47,7 +41,7 @@ export class UserService extends LoggerBase {
     try {
       const user = await this.repo.findOne<User>({ where: { username } });
       if (user) {
-        await this.cacheService.set(username, user, 100000);
+        await this.redis.set(username, user, { ttl: 100000 });
         this.logInfo(`user found: ${user.email}`, `id: ${user.id}`);
       } else {
         this.logWarn(`user with email:${username} is not found!`, user.id);
@@ -60,7 +54,7 @@ export class UserService extends LoggerBase {
   }
 
   async findById(id: string) {
-    const cachedUser = await this.cacheService.get<User>(id);
+    const cachedUser = await this.redis.get<User>(id);
     if (cachedUser) {
       this.logInfo(`user found in cache: ${cachedUser.email}`, cachedUser.id);
       return cachedUser;
@@ -68,7 +62,7 @@ export class UserService extends LoggerBase {
     try {
       const user = await this.repo.findOne<User>({ where: { id } });
       if (user) {
-        await this.cacheService.set(id, user, 100000);
+        await this.redis.set(id, user, { ttl: 100000 });
         this.logInfo(`user found: ${user.email}`, `id: ${user.id}`);
       } else {
         this.logWarn(`user with id:${id} is not found!`, id);
@@ -110,18 +104,23 @@ export class UserService extends LoggerBase {
   }
 
   async remove(username: string) {
-    const user = await this.repo.findOne<User>({ where: { username } });
-    if (!user) {
-      this.logWarn(`user with username:${username} is not found!`, user.id);
-      throw new NotFoundException('user not found');
-    }
+    const cachedUser = await this.redis.get<User>(username);
+    if (cachedUser) {
+      await this.redis.del(username);
+    } else {
+      const user = await this.repo.findOne<User>({ where: { username } });
 
-    try {
-      await user.destroy();
-      this.logInfo(`user deleted: ${user.username}`, user.id);
-    } catch (error) {
-      this.logError(`Error deleting user: ${error.message}`, error);
-      throw error;
+      if (!user) {
+        this.logWarn(`user with username:${username} is not found!`, user.id);
+        throw new NotFoundException('user not found');
+      }
+
+      try {
+        await user.destroy();
+      } catch (err) {
+        this.logError(`Error deleting user: ${err.message}`, err);
+        throw err;
+      }
     }
   }
 

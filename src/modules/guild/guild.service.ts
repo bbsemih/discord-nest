@@ -1,21 +1,16 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { GUILD_REPOSITORY } from '../constants';
 import { Guild } from './guild.entity';
-import { Cache } from 'cache-manager';
 import { LoggerService } from '../../core/logger/logger.service';
 import { CreateGuildDTO } from './dto/create-guild.dto';
 import { LoggerBase } from '../../core/logger/logger.base';
 import { User } from '../user/user.entity';
 import { basename } from 'path';
+import { RedisService } from 'src/core/redis/redis.service';
 
 @Injectable()
 export class GuildService extends LoggerBase {
-  constructor(
-    @Inject(GUILD_REPOSITORY) private readonly repo: typeof Guild,
-    @Inject(CACHE_MANAGER) private cacheService: Cache,
-    protected readonly logger: LoggerService,
-  ) {
+  constructor(@Inject(GUILD_REPOSITORY) private readonly repo: typeof Guild, protected readonly logger: LoggerService, private readonly redis: RedisService) {
     super(logger);
   }
 
@@ -39,7 +34,7 @@ export class GuildService extends LoggerBase {
   }
 
   async findOne(id: string): Promise<Guild> {
-    const cachedGuild = await this.cacheService.get<Guild>(id);
+    const cachedGuild = await this.redis.get<Guild>(id);
     if (cachedGuild) {
       this.logInfo('Guild found in cache:', id);
       return cachedGuild;

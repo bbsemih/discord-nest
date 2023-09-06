@@ -28,7 +28,9 @@ describe('YourService', () => {
 
   describe('uploadFile', () => {
     it('should upload a file successfully', async () => {
-      const mockUploadData = { /* mock the upload data here */ };
+      const mockUploadData = {
+        /* mock the upload data here */
+      };
       const mockFile = Buffer.from('mock file data');
       const filename = 'test.txt';
       const key = 'temp/test.txt';
@@ -57,7 +59,7 @@ describe('YourService', () => {
         Bucket: service['bucketS3'],
         Key: 'temp/test.txt',
       };
-      
+
       const mockHeadObject = jest.fn().mockReturnValue({
         promise: jest.fn().mockResolvedValue({}),
       });

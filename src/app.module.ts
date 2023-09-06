@@ -19,6 +19,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from './modules/cron/cron.module';
+import { RedisModule } from './core/redis/redis.module';
 
 dotenv.config();
 // eslint-disable-next-line
@@ -36,16 +37,14 @@ const cookieSession = require('cookie-session');
       secret: process.env.TOKEN_SECRET,
     }),
     ConfigModule.forRoot({ isGlobal: true }),
-    //move this to a redis module
     CacheModule.register({
       isGlobal: true,
       store: typeof redisStore,
       host: process.env.REDIS_HOST,
       port: process.env.REDIS_PORT,
-      username: process.env.REDIS_USERNAME,
-      password: process.env.REDIS_PASSWORD,
     }),
     ScheduleModule.forRoot(),
+    RedisModule,
     GuildModule,
     UserModule,
     AuthModule,

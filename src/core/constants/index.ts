@@ -29,3 +29,5 @@ export const MESSAGES = {
   INVALID_URL: 'INVALID_URL',
   TOKEN_NOT_FOUND: 'TOKEN_NOT_FOUND',
 };
+
+export const REDIS_CLIENT = 'REDIS_CLIENT';

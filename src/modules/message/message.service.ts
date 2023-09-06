@@ -6,18 +6,17 @@ import { LoggerService } from '../../core/logger/logger.service';
 import { S3Service } from '../s3/s3.service';
 import { LoggerBase } from '../../core/logger/logger.base';
 import { basename } from 'path';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { RedisService } from 'src/core/redis/redis.service';
 
 @Injectable()
 export class MessageService extends LoggerBase {
   constructor(
     private readonly userService: UserService,
     @Inject(MESSAGE_REPOSITORY) private readonly repo: typeof Message,
-    @Inject(CACHE_MANAGER) private cacheService: Cache,
     protected readonly logger: LoggerService,
     protected readonly s3: S3Service,
+    private readonly redis: RedisService,
   ) {
     super(logger);
   }
@@ -30,7 +29,6 @@ export class MessageService extends LoggerBase {
     return basename(__filename);
   }
 
-  //TODO: add file and cache
   //find the userid from session, token or something
   async create(messageInput: CreateMessageDto): Promise<Message> {
     try {
@@ -43,6 +41,7 @@ export class MessageService extends LoggerBase {
         text: messageInput.text,
         guildID: messageInput.guildID,
       });
+      console.log(message);
 
       this.logInfo('Message created by user:', user.id);
       return message;
@@ -53,7 +52,7 @@ export class MessageService extends LoggerBase {
   }
 
   async findOne(id: string, guildId?: string) {
-    const cachedMessage = await this.cacheService.get<Message>(id);
+    const cachedMessage = await this.redis.get<Message>(id);
     if (cachedMessage) {
       this.logInfo('Message found in cache:', cachedMessage.id);
       return cachedMessage;
@@ -66,6 +65,7 @@ export class MessageService extends LoggerBase {
         this.logWarn('Message not found:', id);
         throw new NotFoundException('message not found');
       }
+      this.redis.set(id, message, { ttl: 100000 });
       return message;
     } catch (err) {
       this.logError(`Error finding user: ${err.message}`, err);
@@ -96,28 +96,42 @@ export class MessageService extends LoggerBase {
   }
 
   async remove(id: string) {
-    const message = await this.repo.findOne<Message>({ where: { id } });
-    if (!message) {
-      this.logWarn('Message not found:', id);
-      throw new NotFoundException('message not found');
-    }
-
     try {
-      await message.destroy();
-      this.logInfo('Message deleted:', message.id);
-    } catch (error) {
-      this.logError('Error deleting message:', error);
-      throw error;
+      const cachedMessage = await this.redis.get<Message>(id);
+      if (cachedMessage) {
+        await this.redis.del(id);
+      }
+      const message = await this.repo.findOne<Message>({ where: { id } });
+      if (message) {
+        await message.destroy();
+        this.logInfo('Message deleted:', id);
+        return;
+      } else {
+        this.logWarn('Message not found:', id);
+        throw new NotFoundException('message not found');
+      }
+    } catch (err) {
+      this.logError('Error deleting message:', err);
+      throw err;
     }
   }
 
   async update(id: string, attrs: Partial<Message>) {
-    const message = await this.repo.findOne<Message>({ where: { id } });
+    let message;
+    const cachedMessage = await this.redis.get<Message>(id);
+    if (cachedMessage) {
+      message = cachedMessage;
+      await this.redis.del(id);
+    } else {
+      message = await this.repo.findOne<Message>({ where: { id } });
+    }
+
     if (!message) {
       this.logWarn('Message not found:', id);
       throw new NotFoundException('message not found');
     }
     Object.assign(message, attrs);
+    await this.redis.set(id, message, { ttl: 100000 });
     try {
       const updatedMessage = await message.save();
       this.logInfo('Message updated:', updatedMessage.id);
@@ -151,7 +165,6 @@ export class MessageService extends LoggerBase {
     }
   }
 
-  //TODO
   //should select the busiest hour by taking the created at and slicing it to the hour
   async getBusiestHours(): Promise<number> {
     try {

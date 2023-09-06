@@ -100,17 +100,17 @@ export class S3Service extends LoggerBase {
 
   async deleteAllTemp(): Promise<S3.DeleteObjectsOutput> {
     const prefix = 'temp/';
-  
+
     try {
       const listObjectsResponse = await this.s3.listObjectsV2({ Bucket: this.bucketS3, Prefix: prefix }).promise();
-  
+
       if (!listObjectsResponse.Contents || listObjectsResponse.Contents.length === 0) {
         this.logDebug("No files found in 'temp' folder. Nothing to delete.", prefix);
         return Promise.resolve({});
       }
-  
-      const keysToDelete = listObjectsResponse.Contents.map((object) => ({ Key: object.Key }));
-  
+
+      const keysToDelete = listObjectsResponse.Contents.map(object => ({ Key: object.Key }));
+
       const deleteParams: S3.DeleteObjectsRequest = {
         Bucket: this.bucketS3,
         Delete: {
@@ -118,7 +118,7 @@ export class S3Service extends LoggerBase {
           Quiet: false,
         },
       };
-  
+
       this.logInfo('Deleting all files in the temp folder.');
       return await this.s3.deleteObjects(deleteParams).promise();
     } catch (err) {
@@ -129,17 +129,17 @@ export class S3Service extends LoggerBase {
 
   async deleteAllPermanent(): Promise<S3.DeleteObjectsOutput> {
     const prefix = 'permanent/';
-  
+
     try {
       const listObjectsResponse = await this.s3.listObjectsV2({ Bucket: this.bucketS3, Prefix: prefix }).promise();
-  
+
       if (!listObjectsResponse.Contents || listObjectsResponse.Contents.length === 0) {
         this.logDebug("No files found in 'permanent' folder. Nothing to delete.", prefix);
         return Promise.resolve({});
       }
-  
-      const keysToDelete = listObjectsResponse.Contents.map((object) => ({ Key: object.Key }));
-  
+
+      const keysToDelete = listObjectsResponse.Contents.map(object => ({ Key: object.Key }));
+
       const deleteParams: S3.DeleteObjectsRequest = {
         Bucket: this.bucketS3,
         Delete: {
@@ -147,7 +147,7 @@ export class S3Service extends LoggerBase {
           Quiet: false,
         },
       };
-  
+
       this.logInfo('Deleting all files in the permanent folder.');
       return await this.s3.deleteObjects(deleteParams).promise();
     } catch (err) {
@@ -157,7 +157,7 @@ export class S3Service extends LoggerBase {
   }
 
   async deleteFiles(keys: string[]): Promise<S3.DeleteObjectsOutput> {
-   const keysWithPrefix = keys.map((key) => `temp/${key}`);
+    const keysWithPrefix = keys.map(key => `temp/${key}`);
 
     for (const key of keysWithPrefix) {
       try {
@@ -172,7 +172,7 @@ export class S3Service extends LoggerBase {
         }
       }
     }
-    const objectsToDelete = keysWithPrefix.map((key) => ({ Key: key }));
+    const objectsToDelete = keysWithPrefix.map(key => ({ Key: key }));
 
     const deleteParams: S3.DeleteObjectsRequest = {
       Bucket: this.bucketS3,
@@ -201,7 +201,7 @@ export class S3Service extends LoggerBase {
       await this.s3.headObject({ Bucket: this.bucketS3, Key: copyParams.CopySource }).promise();
     } catch (err) {
       if (err.code == 'NotFound') {
-        this.logDebug("File not found! Can not copy:", copyParams.CopySource);
+        this.logDebug('File not found! Can not copy:', copyParams.CopySource);
         return Promise.resolve({});
       } else {
         this.logError('Error checking if file exists: ', err);

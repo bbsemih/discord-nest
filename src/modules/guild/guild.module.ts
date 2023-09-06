@@ -4,9 +4,10 @@ import { GuildController } from './guild.controller';
 import { LoggerModule } from 'src/core/logger/logger.module';
 import { UserModule } from '../user/users.module';
 import { guildProviders } from './guild.providers';
+import { RedisModule } from 'src/core/redis/redis.module';
 
 @Module({
-  imports: [LoggerModule, UserModule],
+  imports: [LoggerModule, UserModule, RedisModule],
   providers: [GuildService, ...guildProviders],
   exports: [GuildService],
   controllers: [GuildController],
