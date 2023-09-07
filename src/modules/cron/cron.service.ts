@@ -69,6 +69,15 @@ export class CronService extends LoggerBase {
       const totalGuilds = await this.guildService.getTotalGuildCount();
       const mostActiveGuilds = await this.guildService.getMostActiveGuilds();
 
+      const key = 'guildStats';
+      const currentDate = new Date();
+      const logEntry = {
+        date: currentDate.toISOString(),
+        totalGuilds,
+        mostActiveGuilds,
+      };
+      await this.redisService.hset(key, currentDate.toISOString(), JSON.stringify(logEntry));
+
       this.logInfo('Total guilds:', totalGuilds);
       this.logInfo('Most active guilds:', mostActiveGuilds as any);
     } catch (error) {
@@ -81,11 +90,13 @@ export class CronService extends LoggerBase {
     name: 'userStats',
     timeZone: 'Europe/Istanbul',
   })
+  //TODO: last login detatils etc,
   async gatherUserStats(): Promise<void> {
     try {
       const totalUsers = await this.userService.getTotalUserCount();
-      //whats the best approach to keep track of last login details? cache,db,cookie? TODO: most active users
-      // const mostActiveUsers = await this.userService.getMostActiveUsers();
+
+      await this.redisService.hset('totalUsers', new Date().toISOString(), JSON.stringify(totalUsers));
+
       this.logInfo('Total users:', totalUsers);
     } catch (error) {
       this.logError('Error gathering user stats:', error);
@@ -93,7 +104,7 @@ export class CronService extends LoggerBase {
     }
   }
 
-  //deleting unnecessary logs. delete them from redis, db, elastic???
+  //delete logs. TODO: first store them in elastic search
   @Cron(CronExpression.EVERY_WEEKEND, {
     name: 'deleteLogs',
     timeZone: 'Europe/Istanbul',
