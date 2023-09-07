@@ -26,6 +26,7 @@ export class GuildService extends LoggerBase {
     try {
       const newGuild = await this.repo.create<Guild>(guild);
       this.logInfo('Guild created:', newGuild.id);
+      await this.redis.set(newGuild.id.toString(), newGuild, { ttl: 100000 });
       return newGuild;
     } catch (error) {
       this.logError('Error creating guild:', error);
@@ -36,7 +37,6 @@ export class GuildService extends LoggerBase {
   async findOne(id: string): Promise<Guild> {
     const cachedGuild = await this.redis.get<Guild>(id);
     if (cachedGuild) {
-      this.logInfo('Guild found in cache:', id);
       return cachedGuild;
     }
     const guild = await this.repo.findOne<Guild>({ where: { id } });
@@ -44,13 +44,20 @@ export class GuildService extends LoggerBase {
       this.logWarn('Guild not found. ID:', id);
       throw new NotFoundException('Guild not found');
     }
+    await this.redis.set(guild.id.toString(), guild, { ttl: 100000 });
     return guild;
   }
 
   async findGuildsOfUser(ownerId: string): Promise<Guild[]> {
+    const cacheKey = `findGuildsOfUser:${ownerId}`;
+    const cachedGuilds = await this.redis.get<Guild[]>(cacheKey);
+    if (cachedGuilds) {
+      return cachedGuilds;
+    }
     try {
       const guilds = await this.repo.findAll<Guild>({ where: { ownerId: ownerId } });
       this.logInfo(`Found ${guilds.length} guild(s) with ownerId: ${ownerId}`, ownerId);
+      await this.redis.set(cacheKey, guilds, { ttl: 3600 });
       return guilds;
     } catch (error) {
       this.logError('Error finding guilds:', error);
@@ -59,14 +66,23 @@ export class GuildService extends LoggerBase {
   }
 
   async findUsersInGuild(guildId: string): Promise<User[]> {
+    const cacheKey = `findUsersInGuild:${guildId}`;
+    const cachedUsers = await this.redis.get<User[]>(cacheKey);
+
+    if (cachedUsers) {
+      return cachedUsers;
+    }
+
     try {
       const guild = await this.repo.findOne<Guild>({ where: { id: guildId } });
 
       if (!guild) {
         throw new NotFoundException('Guild not found');
       }
+      const users = guild.members;
+      await this.redis.set(cacheKey, users, { ttl: 3600 });
 
-      return guild.members;
+      return users;
     } catch (error) {
       this.logError('Error finding users in guild:', error);
       throw error;
@@ -81,6 +97,9 @@ export class GuildService extends LoggerBase {
     }
 
     try {
+      const cacheKey = `findGuildById:${id}`;
+      await this.redis.del(cacheKey);
+
       await guild.destroy();
       this.logInfo('Guild deleted:', guild.id);
     } catch (error) {
@@ -97,6 +116,9 @@ export class GuildService extends LoggerBase {
     }
     Object.assign(guild, attrs);
     try {
+      const cacheKey = `findGuildById:${id}`;
+      await this.redis.del(cacheKey);
+
       const updatedGuild = await guild.save();
       this.logInfo('Guild updated:', updatedGuild.id);
       return updatedGuild;

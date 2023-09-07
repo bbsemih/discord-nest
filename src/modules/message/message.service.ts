@@ -41,7 +41,7 @@ export class MessageService extends LoggerBase {
         text: messageInput.text,
         guildID: messageInput.guildID,
       });
-      console.log(message);
+      await this.redis.set(message.id, message, { ttl: 100000 });
 
       this.logInfo('Message created by user:', user.id);
       return message;
@@ -51,10 +51,10 @@ export class MessageService extends LoggerBase {
     }
   }
 
+  //dont need guild id
   async findOne(id: string, guildId?: string) {
     const cachedMessage = await this.redis.get<Message>(id);
     if (cachedMessage) {
-      this.logInfo('Message found in cache:', cachedMessage.id);
       return cachedMessage;
     }
     try {
@@ -74,6 +74,12 @@ export class MessageService extends LoggerBase {
   }
 
   async findAllFromUser(userID: string, guildID: string) {
+    const cacheKey = `findAllFromUser:${userID}:${guildID}`;
+    const cachedMessages = await this.redis.get<Message[]>(cacheKey);
+    if (cachedMessages) {
+      return cachedMessages;
+    }
+
     const messages = await this.repo.findAll<Message>({
       where: { userId: userID, guildID: guildID },
     });
@@ -81,10 +87,15 @@ export class MessageService extends LoggerBase {
       this.logWarn('Messages not found:', userID);
       throw new NotFoundException('messages not found');
     }
+    await this.redis.set(cacheKey, messages, { ttl: 3600 });
     return messages;
   }
 
   async findAllFromGuild(guildID: string) {
+    const cachedMessages = await this.redis.get<Message[]>(guildID);
+    if (cachedMessages) {
+      return cachedMessages;
+    }
     const messages = await this.repo.findAll<Message>({
       where: { guildID: guildID },
     });
@@ -92,16 +103,20 @@ export class MessageService extends LoggerBase {
       this.logWarn('Messages not found:', guildID);
       throw new NotFoundException('messages not found');
     }
+    await this.redis.set(guildID, messages, { ttl: 3600 });
     return messages;
   }
 
   async remove(id: string) {
+    let message;
     try {
       const cachedMessage = await this.redis.get<Message>(id);
       if (cachedMessage) {
+        message = cachedMessage;
         await this.redis.del(id);
+      } else {
+        message = await this.repo.findOne<Message>({ where: { id } });
       }
-      const message = await this.repo.findOne<Message>({ where: { id } });
       if (message) {
         await message.destroy();
         this.logInfo('Message deleted:', id);
@@ -165,7 +180,6 @@ export class MessageService extends LoggerBase {
     }
   }
 
-  //should select the busiest hour by taking the created at and slicing it to the hour
   async getBusiestHours(): Promise<number> {
     try {
       const busiestHours = await this.repo.count({

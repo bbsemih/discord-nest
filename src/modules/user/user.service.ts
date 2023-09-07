@@ -25,6 +25,7 @@ export class UserService extends LoggerBase {
     try {
       const newUser = await this.repo.create<User>(user);
       this.logInfo('User created:', newUser.id);
+      await this.redis.set(newUser.username, newUser, { ttl: 100000 });
       return newUser;
     } catch (err) {
       this.logError('Error creating user:', err);
@@ -74,11 +75,21 @@ export class UserService extends LoggerBase {
     }
   }
 
-  //findAll from where???
   async findAll() {
     try {
+      const cacheKey = 'findAllUsers';
+      const cachedUsers = await this.redis.get<User[]>(cacheKey);
+
+      if (cachedUsers) {
+        this.logInfo(`Number of users found in cache: ${cachedUsers.length}`);
+        return cachedUsers;
+      }
+
       const users = await this.repo.findAll<User>();
-      this.logInfo(`number of users found: ${users.length}`);
+      this.logInfo(`Number of users found: ${users.length}`);
+
+      await this.redis.set(cacheKey, users, { ttl: 3600 });
+
       return users;
     } catch (err) {
       this.logError(`Error finding users: ${err.message}`, err);
@@ -87,15 +98,25 @@ export class UserService extends LoggerBase {
   }
 
   async update(id: string, attrs: Partial<User>) {
-    const user = await this.repo.findOne<User>({ where: { id } });
+    let user;
+    const cachedUser = await this.redis.get<User>(id);
+    if (cachedUser) {
+      user = cachedUser;
+    } else {
+      user = await this.repo.findOne<User>({ where: { id } });
+    }
     if (!user) {
-      this.logWarn(`user with id:${id} is not found!`, id);
-      throw new NotFoundException('user not found');
+      this.logWarn(`User with id:${id} is not found!`, id);
+      throw new NotFoundException('User not found');
     }
     Object.assign(user, attrs);
+    await this.redis.set(id, user, { ttl: 100000 });
     try {
+      const cacheKey = `findUserById:${id}`;
+      await this.redis.del(cacheKey);
+
       const updatedUser = await user.save();
-      this.logInfo(`user updated: ${updatedUser.email}`, updatedUser.id);
+      this.logInfo(`User updated: ${updatedUser.email}`, updatedUser.id);
       return updatedUser;
     } catch (err) {
       this.logError(`Error updating user: ${err.message}`, err);
@@ -109,7 +130,6 @@ export class UserService extends LoggerBase {
       await this.redis.del(username);
     } else {
       const user = await this.repo.findOne<User>({ where: { username } });
-
       if (!user) {
         this.logWarn(`user with username:${username} is not found!`, user.id);
         throw new NotFoundException('user not found');
