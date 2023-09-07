@@ -43,7 +43,7 @@ export class MessageService extends LoggerBase {
       });
       await this.redis.set(message.id, message, { ttl: 100000 });
 
-      this.logInfo('Message created by user:', user.id);
+      this.logInfo(5 as any, user.id);
       return message;
     } catch (error) {
       this.logError('Error creating message:', error);
@@ -51,7 +51,7 @@ export class MessageService extends LoggerBase {
     }
   }
 
-  //dont need guild id
+  //dont need guild id at all
   async findOne(id: string, guildId?: string) {
     const cachedMessage = await this.redis.get<Message>(id);
     if (cachedMessage) {

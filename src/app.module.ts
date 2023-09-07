@@ -20,6 +20,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from './modules/cron/cron.module';
 import { RedisModule } from './core/redis/redis.module';
+import { BullModule } from '@nestjs/bull';
 
 dotenv.config();
 // eslint-disable-next-line
@@ -27,7 +28,6 @@ const cookieSession = require('cookie-session');
 
 @Module({
   imports: [
-    //TODO: implement prometheus
     PrometheusModule.register(),
     ThrottlerModule.forRoot({
       ttl: parseInt(process.env.RATE_TTL, 10),
@@ -44,6 +44,12 @@ const cookieSession = require('cookie-session');
       port: process.env.REDIS_PORT,
     }),
     ScheduleModule.forRoot(),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: +process.env.REDIS_PORT,
+      },
+    }),
     RedisModule,
     GuildModule,
     UserModule,

@@ -30,19 +30,83 @@ export class RedisService {
   }
 
   async hset(key: string, field: string, value: any) {
-    await this.redisClient.hset(key, field, value);
+    try {
+      await this.redisClient.hset(key, field, value);
+    } catch (error) {
+      throw new Error(`Failed to hset ${key}:${field}: ${error.message}`);
+    }
   }
 
-  async hget(key: string, field: string) {}
+  async hget(key: string, field: string) {
+    try {
+      return await this.redisClient.hget(key, field);
+    } catch (error) {
+      throw new Error(`Failed to hget ${key}:${field}: ${error.message}`);
+    }
+  }
 
-  async hdel(key: string, field: string) {}
+  async hdel(key: string, field: string) {
+    try {
+      return await this.redisClient.hdel(key, field);
+    } catch (err) {
+      throw new Error(`Failed to hdel ${key}:${field}: ${err.message}`);
+    }
+  }
 
-  async hgetall(key: string) {}
+  async hgetall(key: string) {
+    try {
+      return await this.redisClient.hgetall(key);
+    } catch (error) {
+      throw new Error(`Failed to hgetall ${key}: ${error.message}`);
+    }
+  }
 
-  async hkeys(key: string) {}
+  async hkeys(key: string) {
+    try {
+      return await this.redisClient.hkeys(key);
+    } catch (error) {
+      throw new Error(`Failed to hkeys ${key}: ${error.message}`);
+    }
+  }
+
+  async hvals(key: string) {
+    try {
+      return await this.redisClient.hvals(key);
+    } catch (err) {
+      throw new Error(`Failed to hvals ${key}: ${err.message}`);
+    }
+  }
+
+  async hincrby(key: string, field: string, increment: number) {
+    return await this.redisClient.hincrby(key, field, increment);
+  }
+
+  async hincrbyfloat(key: string, field: string, increment: number) {
+    return await this.redisClient.hincrbyfloat(key, field, increment);
+  }
 
   async ttl(key: string): Promise<number> {
     return await this.redisClient.ttl(key);
+  }
+
+  async expire(key: string, ttl: number): Promise<void> {
+    await this.redisClient.expire(key, ttl);
+  }
+
+  async incr(key: string): Promise<number> {
+    return await this.redisClient.incr(key);
+  }
+
+  async decr(key: string): Promise<number> {
+    return await this.redisClient.decr(key);
+  }
+
+  async incrby(key: string, increment: number): Promise<number> {
+    return await this.redisClient.incrby(key, increment);
+  }
+
+  async decrby(key: string, decrement: number): Promise<number> {
+    return await this.redisClient.decrby(key, decrement);
   }
 
   async flushall() {
