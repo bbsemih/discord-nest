@@ -8,7 +8,7 @@
  * TypeScript
  * Unit/Integration Testing with Jest
  * Docker
- * Redis for caching (TODO)
+ * Redis for caching
  * File Uploading via AWS S3
  * Prometheus (TODO)
  * BullMQ (TODO)
