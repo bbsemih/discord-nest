@@ -26,6 +26,7 @@ export class UserService extends LoggerBase {
       const newUser = await this.repo.create<User>(user);
       this.logInfo('User created:', newUser.id);
       await this.redis.set(newUser.username, newUser, { ttl: 100000 });
+      await this.redis.publish('userCreated', JSON.stringify(newUser));
       return newUser;
     } catch (err) {
       this.logError('Error creating user:', err);
@@ -137,6 +138,7 @@ export class UserService extends LoggerBase {
 
       try {
         await user.destroy();
+        await this.redis.publish('userDeleted', JSON.stringify(user));
       } catch (err) {
         this.logError(`Error deleting user: ${err.message}`, err);
         throw err;

@@ -12,27 +12,12 @@ import * as dotenv from 'dotenv';
 import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { SequelizeInstrumentation } from 'opentelemetry-instrumentation-sequelize';
 //const { AwsInstrumentation } = require("@opentelemetry/instrumentation-aws-sdk");
-//import { HoneycombSDK } from '@honeycombio/opentelemetry-node';
 import { B3Propagator } from '@opentelemetry/propagator-b3';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 //import { SocketIoInstrumentation } from '@opentelemetry/instrumentation-socket.io';
 import { WinstonInstrumentation } from '@opentelemetry/instrumentation-winston';
 
 dotenv.config();
-
-/*
-const honeycombSDK = new HoneycombSDK({
-  instrumentations: [
-    getNodeAutoInstrumentations({
-      '@opentelemetry/instrumentation-fs': {
-        enabled: false,
-      },
-    }),
-  ],
-});
-
-honeycombSDK.start(); 
-*/
 
 const jaegerExporter = new JaegerExporter({
   endpoint: 'http://localhost:14268/api/traces',
@@ -72,7 +57,7 @@ export const otelSDK = new NodeSDK({
   resource: new Resource({
     [SemanticResourceAttributes.SERVICE_NAME]: process.env.OTEL_SERVICE_NAME,
   }),
-  spanProcessor,
+  //spanProcessor,
   instrumentations,
 });
 

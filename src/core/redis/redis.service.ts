@@ -116,4 +116,24 @@ export class RedisService {
   async flushdb() {
     await this.redisClient.flushdb();
   }
+
+  async publish(channel: string, message: string) {
+    await this.redisClient.publish(channel, message);
+  }
+
+  async subscribe(channel: string) {
+    await this.redisClient.subscribe(channel);
+  }
+
+  async geoadd(key: string, longitude: number, latitude: number, member: string) {
+    await this.redisClient.geoadd(key, longitude, latitude, member);
+  }
+
+  async geosearch(key: string, longitude: number, latitude: number, radius: number, unit: string) {
+    await this.redisClient.geosearch(key, longitude, latitude, radius, unit);
+  }
+
+  async georadius(key: string, longitude: number, latitude: number, radius: number, unit: string) {
+    await this.redisClient.georadius(key, longitude, latitude, radius, unit);
+  }
 }
