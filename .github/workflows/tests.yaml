@@ -10,6 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install modules
-      run: npm ci
+      run: npm ci --no-save
     - name: Run tests
-      run: npm run test
+      run: bun test

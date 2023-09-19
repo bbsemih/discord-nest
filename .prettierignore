@@ -1,0 +1,10 @@
+/*.yml
+dist/
+package.json
+.gitignore
+.prettierignore
+.eslintignore
+.husky/*
+Dockerfile
+*.lock
+*.sh */
